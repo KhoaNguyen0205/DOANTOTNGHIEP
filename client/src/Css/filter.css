@@ -1,0 +1,84 @@
+.filter{
+    position: absolute;
+    width: 20%;
+    height: 700px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
+    margin-top: 1%;
+    background-color: rgb(234, 234, 234);
+    border-radius: 10px;
+}
+
+.filter-title{
+    top: 0;
+    margin-top: 5px;
+    border-radius: 10px;
+    background-color: rgb(219, 219, 219);
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.filter-icon{
+    transform: scale(1.5);
+}
+
+.filterByBrand{
+    height: 40%;
+    margin-top: 5%;
+    border: solid 2px grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: white;
+}
+.filterByBrand div{
+    display: flex;
+    height: 25%;
+    align-items: center;
+    font-weight: 700;
+    font-size: 20px;
+    margin-left: 5%;
+}
+
+.filterByCategory{
+    height: 30%;
+    margin-top: 5%;
+    border: solid 2px grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: white;
+}
+
+.filterByCategory div{
+    display: flex;
+    height: 25%;
+    align-items: center;
+    font-weight: 700;
+    font-size: 20px;
+    margin-left: 5%;
+}
+.checkbox-filter{
+    height: 20px;
+    width: 20px;
+    margin-right: 20px;
+}
+
+.filterByPrice{
+    height: 30%;
+    margin-top: 5%;
+    border: solid 2px grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: white;
+}
+.filterByPrice div{
+    font-size: 20px;
+    font-weight: 700;
+    margin-left: 5%;
+}

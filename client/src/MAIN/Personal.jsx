@@ -28,12 +28,11 @@ export default function PersonalPage(){
                 
                 <div className="per-container">
                    <div className="deli">
-                      <h2>Delivering</h2>
-                      <button onClick={logout} className="primary max-w-sm mt-2">Logout</button>
+                   <button onClick={logout} className="primary max-w-sm mt-2">Logout</button>
                    </div>
 
                    <div className="or">
-                      <h2>Order received</h2>
+                     
                    </div>
 
                 </div>

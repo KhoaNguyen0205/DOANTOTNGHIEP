@@ -16,7 +16,7 @@ export default function LoginPage()
         ev.preventDefault();
         try{
             const {data}  = await axios.post('/login', {email,password});
-            if((data.email !== 'admin@gmail.com')){
+            if((data.email)){
               alert('Login successful');
               setRedirect(true);
             }else{

@@ -7,14 +7,15 @@ const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser'); 
 const Product = require('./models/Product');
 const { default: mongoose } = require('mongoose');
-const User = require('./models/User')
-
-
+const User = require('./models/User');
+const Favorite = require('./models/Favorite');
+const Cart = require('./models/Cart');
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'ngockhoangockhoangockhoa'; 
 
 app.use(express.json());
 app.use(cookieParser());
+app.use('/Images-Sneaker', express.static(__dirname +'/Images-Sneaker'));
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173'
@@ -38,7 +39,6 @@ function getUserDataFromReq(req){
          });
     });
 };
-
 
 app.post('/register', async(req,res) => {
     const {name,email,password,dob,sex} = req.body;
@@ -84,6 +84,10 @@ app.post('/login' , async (req , res) => {
     }
   });
 
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json(true);
+});
+
 app.get('/profile', (req,res) => {
     const {token} = req.cookies;
     if(token) { 
@@ -98,17 +102,55 @@ app.get('/profile', (req,res) => {
     }
 });
 
-app.post('/product', async (req,res)=> {
-    const {brand,name,images,description,price,quantity} = req.body;
-   try {
-    const productDoc = await Product.create({
-        brand,name,images,description,price,quantity,
-    }); 
-    res.json(productDoc);
-   } catch (error) {
-    console.log(error.message);
-        res.status(200).json({message: error.message})
-   };   
+app.post('/add-to-favorite', async (req, res) => {
+    const { productId } = req.body;
+    const existingProduct = await Favorite.findOne({ productId });
+    if (existingProduct) {
+        return res.status(409).json({ error: ' This product had on yor Favorite' });
+    }
+    try {
+      const userData = await getUserDataFromReq(req);
+      const FavoriteItem = new Favorite({
+        user: userData.id,
+        productId,
+      });
+      await FavoriteItem.save();
+  
+      return res.status(201).json({ success: true, message: 'Product added to Favorite' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+app.post('/api/add/:id/to-cart', async(req,res) => {
+    const userData = await getUserDataFromReq(req);
+    const quantity = req.body.quantity;
+    const size = req.body.size;
+    const DataID = req.params.id;
+    
+    try {
+        const existingCartItem = await Cart.findOne({
+            user: userData.id,
+            productId: DataID,        
+        })
+        if(existingCartItem) {
+            existingCartItem.quantity += parseInt(quantity);
+            await existingCartItem.save();
+            res.json(existingCartItem)
+        }else {
+            const newCartDoc = await Cart.create({
+                user : userData.id,
+                productId:DataID,
+                quantity,
+                size,
+            })
+            res.json(newCartDoc);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 })
 
 const storage = multer.diskStorage({
@@ -119,11 +161,10 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     },
 });
-
 const upload = multer({ storage: storage });
 
 app.post('/api/product', upload.array('images', 3), async (req, res) => {
-    const { brand, name, description, price, quantity } = req.body;
+    const { brand, name, description, price, quantity,gender,category } = req.body;
     const imagePaths = [];
 
     if (req.files) {
@@ -131,9 +172,10 @@ app.post('/api/product', upload.array('images', 3), async (req, res) => {
             imagePaths.push(file.path);
         });
     }
-
     const newProduct = new Product({
         brand: brand,
+        gender:gender,
+        category:category,
         name: name,
         description: description,
         price: price,
@@ -143,20 +185,40 @@ app.post('/api/product', upload.array('images', 3), async (req, res) => {
 
     try {
         await newProduct.save();
-        res.json({ success: true });
+        res.json({ success: true, imagePaths: imagePaths });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Something went wrong on the server' });
     }
 });
 
-app.post('/logout', (req, res) => {
-    res.cookie('token', '').json(true);
- });
- 
+app.get('/api/product', async(req,res) => {
+    res.json(await Product.find());
+})
+
+app.get('/api/product/:id', async(req,res) => {
+    const {id} = req.params;
+    res.json(await Product.findById(id)) 
+})
+
+app.get('/user-favorite', (req,res) => {
+    const {token} = req.cookies;
+    jwt.verify(token,jwtSecret, {}, async (err, userData) => {
+        const {id} = userData;
+        res.json( await Favorite.find({user: id}))
+    });
+});
+
+app.get('/user-cart', (req,res) => {
+    const {token} = req.cookies;
+    jwt.verify(token,jwtSecret, {}, async (err, userData) => {
+        const {id} = userData;
+        res.json(await Cart.find({user: id}))
+    });
+});
 
 app.get('/test', (req,res) =>{
-    res.json('test ok!!')
+    res.json('test ok!!!!!')
 });
 
 app.listen(4000);

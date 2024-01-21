@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react"
 import AddProduct from "./AddProduct";
+import DetailsProduct from "./DetailsProduct";
 
 export default function AdminMenu() {
    
@@ -24,9 +25,26 @@ export default function AdminMenu() {
           hideAddPro();
         } else {
           showAddPro();
+          HideDetailsProduct();
         }
-      }
+    }
 
+    function showDetailsProduct() {
+        setDetailsProduct(true);
+    }
+
+    function HideDetailsProduct() {
+        setDetailsProduct(false);
+    }
+
+    function handleClickDP() {
+        if(detailsProduct){
+            HideDetailsProduct();
+        }else {
+            showDetailsProduct();
+            hideAddPro();
+        }
+    }
 
     return(
         <div className="admin-container">
@@ -39,7 +57,7 @@ export default function AdminMenu() {
                     24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H248v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/>
                 </svg>
 
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 97 97" id="sneakers" fill="red" height='4em'>
+                <svg onClick={handleClickDP} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 97 97" id="sneakers" fill="red" height='4em'>
                     <path fill="none" d="M.474.007h96v96h-96z"></path>
                     <path d="M2.563 58.91h21.61a1.5 1.5 0 0 0 0-3H2.563a1.5 1.5 0 0 0 0 3Z"></path>
                     <path d="M18.581 46.916a13.711 13.711 0 0 0 7.122 4.29 1.501 1.501 0 0 
@@ -109,6 +127,11 @@ export default function AdminMenu() {
               {addProduct && (
                 <AddProduct/>
               )}
+              {
+                detailsProduct && (
+                    <DetailsProduct />
+                )
+              }
             </div>
         </div>
     )

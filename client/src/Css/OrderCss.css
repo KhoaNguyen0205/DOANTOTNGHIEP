@@ -1,0 +1,7 @@
+.order-container{
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    background-color: rgb(233, 1, 1);
+    border: solid 2px black;
+}

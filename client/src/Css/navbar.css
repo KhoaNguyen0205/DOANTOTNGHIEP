@@ -1,0 +1,120 @@
+.nav-container{
+    inset: 0;
+    margin: 0 auto 0 auto;
+    position: absolute;
+    top: 0;
+    border: solid black;
+    height: 25%;
+}
+nav{
+    background-color: black;
+   height: 100%;
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+}
+.nav-above{
+    height: 60%;
+    width: 100%;
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.brand-name{
+    background-color: white;
+    width: 20%;
+    height: 60%;
+    font-size: 30px;    
+    display: flex;
+    align-items: center;
+    font-weight: 900;
+    color:  black;
+    inset: 0;
+    margin: auto 0 auto 0;
+    margin-left: 3%;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.brand-name img{
+    height: 100%;
+    width: 25%;
+    border-radius: 50%;
+    margin-left: 5%;
+}
+.search-bar{
+    background-color:  rgb(255, 255, 255);
+    height: 50%;
+    width: 50%;
+    inset: 0;
+    margin:  auto 0 auto 0;
+    display: flex;
+    align-items: center;
+}
+.search-bar input{
+    height: 80%;
+    width: 85%;
+    border: none;
+    margin-left: 2%;
+}
+.user-login{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 15%;
+    color: white;
+    justify-content: space-around;
+}
+.user-login h4:hover {
+    text-decoration: underline;
+}
+.nav-below{
+    background-color: rgb(56, 56, 56);
+    height: 38%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom:  groove black;
+}
+.nav-menu{
+    width: 70%;
+}
+.nav-menu ul{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    list-style-type: none;
+    color: white;
+    font-weight: 700;
+    height: 100%;
+}
+.nav-menu ul li{
+    height: 70%;
+    cursor: pointer;
+    color: white;
+}
+.nav-menu ul li:hover{
+    border-bottom:white solid 5px;
+}
+.active-item{
+    height: 70%;
+    cursor: pointer;
+    border-bottom: solid 5px white;
+}
+.user-careAbout{
+    width:5%;
+    margin-right: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.careAbout-icon{
+    transform: scale(1.3);
+    color: white;
+    cursor: pointer;
+}
+.careAbout-icon:hover{
+    transform: scale(1.5);
+    color: rgb(255, 153, 153);
+}

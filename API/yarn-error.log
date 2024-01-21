@@ -1,8 +1,8 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\TechCare\.yarn\releases\yarn-1.22.19.cjs add compareSync
+  C:\Program Files\nodejs\node.exe C:\Users\TechCare\.yarn\releases\yarn-1.22.19.cjs add useParams
 
 PATH: 
-  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Azure Data Studio\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\MinGW\bin;C:\TDM-GCC-64\bin;C:\TDM-GCC-64\bin;C:\TDM-GCC-32\bin;C:\Users\TechCare\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\TechCare\AppData\Local\Programs\Python\Python311\;C:\Users\TechCare\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Azure Data Studio\bin;C:\Users\TechCare\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\TechCare\AppData\Roaming\npm;C:\src\flutter\bin;C:\Program Files (x86)\MongoDB Atlas CLI\;C:\Program Files\heroku\bin
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Azure Data Studio\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\MinGW\bin;C:\TDM-GCC-64\bin;C:\TDM-GCC-64\bin;C:\TDM-GCC-32\bin;C:\Users\TechCare\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\TechCare\AppData\Local\Programs\Python\Python311\;C:\Users\TechCare\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Azure Data Studio\bin;C:\Users\TechCare\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\TechCare\AppData\Roaming\npm;C:\src\flutter\bin;C:\Program Files (x86)\MongoDB Atlas CLI\;C:\Program Files\heroku\bin;C:\Users\TechCare\AppData\Local\Programs\Python\Python311\Lib\site-packages\chromedriver_py;C:\Program Files\ChromeDriver\chromedriver-win64;
 
 Yarn version: 
   1.22.19
@@ -14,7 +14,7 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/compareSync: Not found
+  Error: https://registry.yarnpkg.com/useParams: Not found
       at params.callback [as _callback] (C:\Users\TechCare\.yarn\releases\yarn-1.22.19.cjs:77675:18)
       at self.callback (C:\Users\TechCare\.yarn\releases\yarn-1.22.19.cjs:135297:22)
       at Request.emit (node:events:513:28)
@@ -704,7 +704,7 @@ Lockfile:
   
   image-downloader@^4.3.0:
     version "4.3.0"
-    resolved "https://registry.npmjs.org/image-downloader/-/image-downloader-4.3.0.tgz"
+    resolved "https://registry.yarnpkg.com/image-downloader/-/image-downloader-4.3.0.tgz#1bc6012d4c1eeeae82b7cabada13c5d0359045f4"
     integrity sha512-UBioN0E+8zu8N0lLC6wkZmPA/MA1A3yx9B1whjy5O/YiOV9XrSxLLKi7JqLLj6knQ3n9N1OBoHFS7shp8sehBQ==
     dependencies:
       follow-redirects "^1.15.0"

@@ -3,8 +3,7 @@ import { useContext, useState } from "react"
 import { UserContext } from "../userContext";
 import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
-import AdminHome from "./AdminHome";
-import AdminMenu from "./AdminMenu";
+import Admin from "./Admin";
 
 export default function AdminPage() {
     const {user} = useContext(UserContext);
@@ -59,7 +58,7 @@ export default function AdminPage() {
                         </svg>
                     </div>
                     ) : (
-                    <AdminMenu/>
+                    <Admin/>
                     )}
                 </div>
             ): (

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 /* eslint-disable react/no-unescaped-entities */
 export default function Nike() {
     return(
@@ -18,7 +20,9 @@ export default function Nike() {
           </div>
           <div className="content-text right">
             <h3>Click here to order</h3>
-            <button>Watch All</button>
+            <Link to={'/NikeProduct'}>
+              <button>Watch All</button>
+            </Link>
           </div>
           <img src="https://i.imgur.com/GsBNEtU.png"/>
         </div>

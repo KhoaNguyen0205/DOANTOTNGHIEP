@@ -15,6 +15,14 @@ const productSchema = new mongoose.Schema({
         type: [String],
         require: true,
     },
+    category:{
+        type:String,
+        require:true,
+    },
+    gender:{
+        type:String,
+        require: true,
+    },
     description: {
         type: String,
         require: true,
@@ -27,9 +35,8 @@ const productSchema = new mongoose.Schema({
         type: Number,
         require: true,
     },
-},
-{
-    timestamp: true,
+},{
+    timestamps:true
 })
 
 const Product = mongoose.model('Product', productSchema);

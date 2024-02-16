@@ -10,7 +10,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState('');
     const [cfpass,setCfPass] = useState('');
     const [dob,setDob] = useState('');
-    const [sex, setSex] = useState('');
+    const [gender, setGender] = useState('');
 
     async function registerUser(ev) {
         ev.preventDefault();
@@ -25,7 +25,7 @@ export default function RegisterPage() {
                 password,
                 cfpass,
                 dob,
-                sex,
+                gender,
             });
             alert('Sign Up Success. You can now log in');
             window.location.reload();
@@ -71,16 +71,16 @@ export default function RegisterPage() {
                                    value={dob} 
                                    onChange={ev => setDob(ev.target.value)} />
                             <select required
-                                    value={sex}
-                                    onChange={ev => setSex(ev.target.value)}
+                                    value={gender}
+                                    onChange={ev => setGender(ev.target.value)}
                             >
-                                    <option value="">Your Sex</option>
+                                    <option value="">Your Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                             </select>
                     </div>
-                    <button>REGISTER</button>
+                    <button className="login-button">REGISTER</button>
                     <div className="to-register">
                         <h3>If you have account ?</h3>
                         <Link to={'/login'}>

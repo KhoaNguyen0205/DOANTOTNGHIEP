@@ -1,7 +1,190 @@
 .order-container{
-    height: 100px;
-    width: 100px;
     position: absolute;
-    background-color: rgb(233, 1, 1);
-    border: solid 2px black;
+    height: 100%;
+    width: 100%;
+    inset: 0;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    inset: 0;
+    margin: 0 auto 0 auto;
+}
+.order-title{
+    height: 10%;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: 800;
+    color: black;
+    border-bottom: solid black;
+}
+.order-body{
+    background-color: black;
+    height: 90%;
+    display: flex;
+    flex-direction: row;
+}
+.order-summary{
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    border-right: black solid;
+    display: flex;
+    flex-direction: column;
+}
+.os-title,
+.pd-title{
+    font-weight: 800;
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    margin-left: 20px;
+}
+.os-img{
+    width: 55%;
+    height: 200px;
+    background-color: rgb(210, 74, 74);
+    border-bottom: solid black;
+    inset: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+}
+.os-img img{
+    height: 100%;
+    width: 100%;
+    background-color: white;
+}
+.os-pro-info{
+    background-color: rgb(249, 249, 249);
+    height: 50px;
+    width: 80%;
+    inset: 0;
+    margin: 2% auto 0 auto;
+}
+.os-pro-name-and-price{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: black;
+    font-weight: 700;
+}
+.os-pro-gender-and-quantity{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: black;
+    font-weight: 700;
+}
+.os-select-voucher{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(238, 238, 238);
+    margin-top: 3%;
+}
+.os-list-vouchers{
+    position: absolute;
+    height: 80%;
+    width: 60%;
+    border: solid black;
+    transform: translate(0%,0%);
+    overflow-y: auto;
+    padding-top: 2%;
+    background-color: rgb(255, 255, 255);
+}
+.icon-hide-list-voucher{
+    margin-left: 95%;
+    margin-top: 1%;
+    cursor: pointer;
+    background-color: rgb(255, 190, 190);
+    width: 30px;
+    height: 30px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.os-voucher{
+   border: solid rgb(255, 0, 0);
+   height: 150px;
+   width: 80%; 
+   margin-bottom: 5%;
+   inset: 0;
+   margin: auto auto 5% auto;
+}
+
+.os-total-price{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.payment-details{
+    background-color: rgb(255, 255, 255);
+    width: 50%;
+    height: 100%;
+    right: 0;
+    /* background-image: url("/Images/bgpm.png"); */
+}
+.pd-content{
+    width: auto;
+    height: 400px;
+    background-color: none;
+    margin-top: 5%;
+}
+.pd-address,
+.pd-contact-us{
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    inset: 0;
+    margin: 0 auto 2% auto;
+}
+.pd-contact-us{
+    height: 150px;
+    display: flex;
+    justify-content: space-around;
+}
+.pd-address input,
+.pd-contact-us input{
+    width: 90%;
+    height: 30px;
+    border-radius: 10px;
+    padding-left: 10px;
+}
+.pd-payment-menthod{
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    inset: 0;
+    margin: 0 auto 2% auto;
+    
+}
+.method-POD,
+.method-QR{
+    height: 30px;
+    width: 300px;
+    border: solid black;
+    margin-bottom: 2%;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.pd-button{
+    height: 50px;
+    width: auto;
+    display: flex;
+    justify-content: space-around;
+}
+.pd-button button{
+    width: 50%;
+    background-color: rgb(175, 255, 175);
+    border: solid black;
 }

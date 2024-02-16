@@ -20,6 +20,8 @@ import NavigationBar from './Orther/navbar2'
 import Product from './MAIN/Product'
 import AmdinProduct from './ADMIN/Product'
 import MensProduct from './MAIN/Men\'sProduc'
+import Voucher from './ADMIN/Voucher'
+import WomenProduct from './MAIN/Women\'sProduct'
 
 axios.defaults.baseURL = 'http://localhost:4000/'
 axios.defaults.withCredentials = true;
@@ -36,6 +38,7 @@ function App() {
           <Route path='/personal' element={<PersonalPage />} />
           <Route path='/NikeProduct' element={<NikeProduct />} />
           <Route path='/pd/men/' element={<MensProduct/>}/>
+          <Route path='/pd/women/' element={<WomenProduct/>}/>
         </Route>
       </Routes>
 
@@ -48,9 +51,10 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/wcadmin' element={<Admin />} />
-        <Route path='/adminpage' element={<AdminPage />} />
+        <Route path='/adminpage' element={<AdminPage />} /> 
         <Route path='/adminpage/product' element={<AmdinProduct />} />
         <Route path='/adminpage/product/edit' element={<AmdinProduct />} />
+        <Route path='/adminpage/voucher' element={<Voucher />} />
         <Route path='admin-home' element={<AdminHome />} />
         <Route path='navigation' element={<NavigationBar />} />
       </Routes>

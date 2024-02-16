@@ -106,9 +106,9 @@ export default function AmdinProduct() {
     }
     return (
         <>
-            <Admin />
+           <Admin/>
             {user ? (
-                <div className="admin-product-container">
+                <div className="admin-content-container">
                     <div className="product-above">
                         <h2>Product Management</h2>
                         <button onClick={hideAddPrd}>Product</button>
@@ -150,6 +150,9 @@ export default function AmdinProduct() {
                                                 <option value="Jordan">Jordan</option>
                                                 <option value="Adidas">Adidas</option>
                                                 <option value="Puma"  >Puma</option>
+                                                <option value="NB">NB</option>
+                                                <option value="Crocs">Crocs</option>
+                                                <option value="Converse">Converse</option>
                                             </select>
                                         </div>
                                         <div className="admin-product-price">
@@ -226,7 +229,7 @@ export default function AmdinProduct() {
                     </div>
                 </div>
             ) : (
-                <div></div>
+                <div className="content"> LOGIN to conitnue</div>
             )}
         </>
     )

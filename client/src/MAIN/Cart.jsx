@@ -83,7 +83,7 @@ export default function Cart() {
                                         <Link>
                                             <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                                         </Link>
-                                        <Link to={'/order/'+cart._id}>
+                                        <Link to={'/order/'+cart._id} target="_blank">
                                             <FontAwesomeIcon icon={faMoneyCheckDollar} style={{ color: 'green' }} />
                                         </Link>
                                         <Link>

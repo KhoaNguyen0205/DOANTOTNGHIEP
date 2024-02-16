@@ -80,7 +80,11 @@ export default function Navbar() {
                                         MEN
                                     </li>
                                 </Link>
-                                <Link><li>WOMEN</li></Link>
+                                <Link to={'/pd/women/'}>
+                                    <li className={getItemClassName('/pd/women/')}>
+                                        WOMEN
+                                    </li>
+                                </Link>
                                 <Link><li>Accessories</li></Link>
                                 <Link><li>Shirt</li></Link>
                                 <Link><li>Brand</li></Link>

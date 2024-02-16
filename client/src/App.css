@@ -5,6 +5,8 @@
 @import url('./Css/indexPage.css');
 @import url('./Css/admin.css');
 @import url('./Css/filter.css');
+@import url('./Css/adminProduct.css');
+@import url('./Css/voucher.css');
 /*-------Login */
 .login-container {
     width: 100%;
@@ -64,15 +66,50 @@
     border-radius:20px ;
     padding-left: 10%;
 }
-.form-login button{
+.login-button{
     background-color: aqua;
     width: 100%;
     left: 0;
     right: 0;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 20px;
     border: 2px solid black;
 }
+
+.more-option-login{
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+.option-gmail,
+.option-facebook{
+  width: auto;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 20px;
+}
+.logo-gmail,
+.logo-facebook{
+  height: 40px;
+  width: 40px;
+  border: solid 1px black;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo-gmail img,
+.logo-facebook img{
+  height: 80%;
+  width: 80%;
+}
+
 .to-register{
     display: flex;
     flex-direction: row;

@@ -68,7 +68,7 @@ export default function NikeProduct() {
     return(
        <>
        <Navbar/>
-       {/* <div className="nike-product">
+       <div className="nike-product">
             <div className="product-filter-favorite">
                 <div className="product-favorite">
                     
@@ -157,7 +157,7 @@ export default function NikeProduct() {
             
 
         </div>
-       )} */}
+       )}
     
        </>
     )

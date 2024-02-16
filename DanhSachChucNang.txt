@@ -1,0 +1,20 @@
+Phân quyền quản trị viên (Admin):
+•	Quản trị viên có thể toàn quyền truy cập và quản lý hệ thống
+•	Thêm, sửa, xoá sản phẩm để cập nhật thông tin và danh mục của sản phẩm
+•	Quản lý đơn hàng, theo dõi tình trạng đơn hàng và xử lý yêu cầu khách hàng.
+•	Xử lý và thực hiện các chức năng liên quan đến Voucher, xử lý khuyến mãi.
+•	Nhận thông báo, xử lý hàng tồn kho.
+•	Xem thống kê doanh thu, theo dõi hiệu suất kinh doanh
+•	Nhận và phản hồi tin nhắn của khách hàng
+Phân quyền khách hàng(Customer):
+•	Khách hàng chỉ có thể truy cập vào hệ thống được phân quyền.
+•	Đăng ký và đăng nhập vào website
+•	Xem thông tin, chi tiết sản phẩm
+•	Thêm sản phẩm vào mục yêu thích, giỏ hàng
+•	Đặt hàng
+•	Thanh toán theo hai phương thức trực tiếp hoặc trực tuyến
+•	Để lại bình luận, nhận xét của cá nhân dưới những sản phẩm
+•	Gửi tin nhắn và nhận phản hổi từ quản trị viên
+•	Thực hiện các chức năng quản lý cá nhân như xem đơn hàng hoặc huỷ đơn hàng(trong trường hợp quản trị viên chưa xác nhận đơn hàng)
+•	Nhận các ưu đãi và khuyến mãi đến từ cửa hàng.
+

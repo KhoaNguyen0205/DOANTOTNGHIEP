@@ -29,6 +29,8 @@ export default function Admin() {
         return 'Product';
       case 'adminpage/voucher':
         return 'Voucher';
+      case 'adminpage/order':
+        return 'Order Management'
 
     }
   }
@@ -52,8 +54,8 @@ export default function Admin() {
           ADMINATOR
         </div>
         <div className="content-aside">
-          {selectedItem} 
-          </div>
+          {selectedItem}
+        </div>
       </nav>
 
       <aside>
@@ -74,8 +76,10 @@ export default function Admin() {
           <li>
             <FontAwesomeIcon icon={faChartColumn} className="admin-aside-icon" /> Charts
           </li>
-          <li>
-            <FontAwesomeIcon icon={faMoneyBill1Wave} className="admin-aside-icon" /> Order
+          <li className={getItemClassName('/adminpage/order')}>
+            <Link to={'/adminpage/order'}>
+              <FontAwesomeIcon icon={faMoneyBill1Wave} className="admin-aside-icon" /> Order
+            </Link>
           </li>
           <li>
             <FontAwesomeIcon icon={faBell} className="admin-aside-icon" /> Notification

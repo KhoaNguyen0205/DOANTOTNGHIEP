@@ -18,6 +18,7 @@ export default function OrderPage() {
     // data of order
     const [productId, setProductId] = useState('');
     const [quantity, setQuantity] = useState('');
+    const [size, setSize] = useState('');
     const [totalPrice, setTotalPrice] = useState('');
     const [addVoucher, setAddVoucher] = useState('');
     const [address, setAddress] = useState('');
@@ -63,21 +64,34 @@ export default function OrderPage() {
     async function handleOrder(ev) {
         ev.preventDefault();
         try {
+        const currentProduct = products.find(product => product._id === pdCart.productId);
+
+        if (!currentProduct) {
+         
+            alert('wrong');
+            return;
+        }
+
+        const calculatedTotalPrice = selectedVoucherInfo
+            ? parseInt(currentProduct.price) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100
+            : parseInt(currentProduct.price) * pdCart.quantity;
+
             await axios.post('/api/order', {
                 productId: pdCart.productId,
                 quantity: pdCart.quantity,
-                addVoucher,
-                totalPrice,
+                size: pdCart.size,
+                addVoucher: selectedVoucherInfo ? selectedVoucherInfo.valueVoucher : 'none',
+                totalPrice: calculatedTotalPrice,
                 address,
                 PhNb,
                 nameOfCus,
                 paymentMethod,
             })
             alert('Success');
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             alert('wrong')
-            window.location.reload();
+          
         }
     }
 
@@ -104,7 +118,7 @@ export default function OrderPage() {
                                             <div style={{ display: 'none' }}>{pdCart.productId}</div>
                                         </div>
                                         <div className="os-pro-gender-and-quantity">
-                                            <div>{product.gender}</div>
+                                            <div>{pdCart.size}</div>
                                             <div>Qty: {pdCart.quantity}</div>
                                         </div>
                                         <div className="os-select-voucher" onClick={showListVoucher}>
@@ -149,7 +163,6 @@ export default function OrderPage() {
                                                     {parseInt(product.price) * pdCart.quantity}$
                                                 </div>
                                             )}
-
                                         </div>
                                     </div>
                                 </div>
@@ -157,30 +170,30 @@ export default function OrderPage() {
                     </div>
                     <div className="payment-details">
                         <b className="pd-title">Payment Details</b>
-                        <div className="pd-content">
+                        <form className="pd-content" onSubmit={handleOrder}>
                             <div className="pd-address">
                                 <b>Shipping Address:</b>
-                                <input type="text" value={address} onChange={ev => setAddress(ev.target.value)} placeholder="Your Address" />
+                                <input type="text" value={address} onChange={ev => setAddress(ev.target.value)} placeholder="Your Address" required />
                             </div>
                             <div className="pd-contact-us">
                                 <b>Contact Us:</b>
-                                <input type="text" value={nameOfCus} onChange={ev => setNameOfCus(ev.target.value)} placeholder="Your Name" />
-                                <input type="text" value={PhNb} onChange={ev => setPhNb(ev.target.value)} placeholder="Your PhNB" />
+                                <input required type="text" value={nameOfCus} onChange={ev => setNameOfCus(ev.target.value)} placeholder="Your Name" />
+                                <input required type="text" value={PhNb} onChange={ev => setPhNb(ev.target.value)} placeholder="Your PhNB" />
                             </div>
 
                             <div className="pd-payment-menthod">
                                 <b>Payments Menthod:</b>
                                 <div className="method-POD">
-                                    <input type="radio" name="PaymentsMethod" />POD
+                                    <input type="radio" name="PaymentsMethod" value='POD' onChange={ev => setPaymentMethod(ev.target.value)} required />POD
                                 </div>
                                 <div className="method-QR">
-                                    <input type="radio" name="PaymentsMethod" id="" />QR CODE:
+                                    <input type="radio" name="PaymentsMethod" value='QRCODE' onChange={ev => setPaymentMethod(ev.target.value)} required />QR CODE:
                                 </div>
                             </div>
-                        </div>
-                        <div className="pd-button">
-                            <button>Submit</button>
-                        </div>
+                            <div className="pd-button">
+                                <button>Continue</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

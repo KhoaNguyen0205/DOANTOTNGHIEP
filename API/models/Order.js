@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const { Timestamp } = require('mongodb');
 
 const orderSchema = new mongoose.Schema({
-  productID: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'Product'
+  productId: {
+     type: mongoose.Schema.Types.ObjectId, ref: 'Product'
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -14,7 +14,10 @@ const orderSchema = new mongoose.Schema({
     type: Number,
 
   },
-
+  size: {
+    type: Number,
+    require: true,
+  },
   addVoucher: {
     type: String,
   },
@@ -43,6 +46,9 @@ const orderSchema = new mongoose.Schema({
 
   },
   success: {
+    type: Boolean,
+  },
+  cancled: {
     type: Boolean,
   }
 

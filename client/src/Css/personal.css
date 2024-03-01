@@ -1,0 +1,200 @@
+.per-container {
+  position: absolute;
+  width: 20%;
+  height: 75%;
+  margin-top: 12%;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  right: 0;
+  background-color: none;
+}
+
+.per-menu {
+  height: 100%;
+  width: 100%;
+}
+
+.per-menu-top {
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  inset: 0;
+  margin: 0 auto 0 auto;
+  justify-content: space-around;
+  align-items: center;
+  border: solid rgb(163, 163, 163);
+  border-radius: 15px;
+}
+
+.per-menu-top-icon {
+  height: 50px;
+  width: 50px;
+  border: solid rgb(128, 128, 128);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  background-color: rgb(193, 193, 193);
+}
+
+.per-menu-bot {
+  width: 80%;
+  border: solid rgb(163, 163, 163);
+  inset: 0;
+  margin: 5% auto 0 auto;
+  border-radius: 15px;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.per-menu-bot-item {
+  height: 20%;
+  display: flex;
+  padding-left: 20px;
+  align-items: center;
+  color: black;
+}
+
+.per-menu-bot-item b:hover {
+  color: red;
+  cursor: pointer;
+}
+
+.myaccount-active-item {
+  color: red;
+}
+
+.myacc-container,
+.pucharseorder-container {
+  position: absolute;
+  height: 72%;
+  width: 75%;
+  margin-left: 20%;
+  margin-top: 12%;
+  background-color: rgb(255, 255, 255);
+}
+
+.mc-top {
+  height: 15%;
+  border-bottom: solid rgb(204, 204, 204);
+  display: flex;
+  flex-direction: column;
+}
+
+.pucharseOrder-navbar {
+  height: 15%;
+  background-color: rgb(255, 255, 255);
+  border-bottom: solid none;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.pO-nav-item {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  border: solid rgb(186, 186, 186);
+  font-weight: 700;
+}
+
+.pO-nav-item:hover {
+  color: red;
+
+}
+
+.pO-nav-item-click {
+  color: red;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  font-weight: 700;
+  box-shadow: rgb(251, 239, 239) 0px -23px 25px 0px inset,
+    rgba(255, 216, 216, 0.581) 0px -36px 30px 0px inset,
+    rgb(255, 255, 255) 0px -79px 40px 0px inset,
+    rgba(255, 255, 255, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px,
+    rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgb(255, 255, 255) 0px 16px 8px,
+    rgb(255, 255, 255) 0px 8px 8px;
+}
+
+.pucharseOrder-body {
+  height: 500px;
+  margin-top: 2%;
+  border: solid rgb(203, 203, 203);
+}
+
+.order-processing {
+  height: 150px;
+  width: 400px;
+  border: solid black;
+  margin-left: 25px;
+  border-radius: 5px;
+  margin-top: 2%;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+
+.img-order-processing {
+  width: 35%;
+  height: 100%;
+  border-radius: 10px;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-order-processing img {
+  height: 80%;
+  width: 80%;
+  filter: drop-shadow(0 0 0.75rem rgb(255, 1, 1));
+}
+
+.info-order-processing {
+  height: auto;
+  width: 70%;
+  margin-left: 5%;
+}
+
+.product-info-order-processing {
+  height: 25px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+}
+
+.customer-info-order-processing {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10%;
+  color: rgb(98, 98, 98);
+}
+
+.btn-select-options {
+  height: 100%;
+  width: 100%;
+  background-color: rgb(224, 224, 224);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn-select-options button{
+  height: 30%;
+  width: 40%;
+}

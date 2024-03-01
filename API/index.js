@@ -150,15 +150,15 @@ app.get('/api/voucher', async (req, res) => {
     res.json(await Voucher.find())
 })
 app.post ('/api/order', async(req,res) => {
-    const userData = getUserDataFromReq(req);
-    const {id} = req.params.id;
-    const {productId, quantity,addVoucher,totlaPrice,address,nameOfCus,PhNb,paymentMethod, approve, success} = req.body;
+    const userData = await getUserDataFromReq(req);
+    const {id} = req.params;
+    const {productId, quantity,size,addVoucher,totalPrice,address,nameOfCus,PhNb,paymentMethod} = req.body;
 
     try {
 
         const newOrder = new Order ({
             user: userData.id,
-            productId, quantity,addVoucher,totlaPrice, address, nameOfCus,PhNb, paymentMethod, approve:false, success:false,
+            productId, quantity,size,addVoucher,totalPrice, address, nameOfCus,PhNb, paymentMethod, approve:false, success:false,cancled:false
         });
         await newOrder.save();
         return res.status(201).json({ success: true});
@@ -263,6 +263,14 @@ app.get('/user-cart', (req, res) => {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         const { id } = userData;
         res.json(await Cart.find({ user: id }))
+    });
+});
+
+app.get('/user-order', (req,res) => {
+    const {token} = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        const { id } = userData;
+        res.json(await Order.find({ user: id }))
     });
 });
 

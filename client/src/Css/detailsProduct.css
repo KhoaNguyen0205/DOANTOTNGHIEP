@@ -341,4 +341,39 @@
   border-bottom: solid 5px red;
 }
 
-
+.dtPro-order{
+  position: absolute;
+  height: 90%;
+  width: 80%;
+  background-color: rgb(255, 255, 255);
+  border: solid black;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.dtPro-hide-order{
+  width: 40px;
+  height: 30px;
+  color: red;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  cursor: pointer;
+}
+.dtPro-main{
+  width: auto;
+  margin-top: 30px;
+  height: 95%;
+  display: flex;
+  flex-direction: row; 
+}
+.dtPro-main-os{
+  background-color: none;
+  width: 50%;
+  border-right: solid black;
+}
+.dtPro-main-pd{
+  width: 50%;
+}

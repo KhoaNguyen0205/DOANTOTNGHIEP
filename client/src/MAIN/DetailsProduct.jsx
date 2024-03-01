@@ -5,7 +5,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import Cart from "./Cart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleMinus, faComment, faCommentMedical, faCommentSlash, faCommentSms, faComments, faStairs, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faCircleMinus, faComment, faCommentMedical, faCommentSlash, faCommentSms, faComments, faStairs, faStar, faX } from "@fortawesome/free-solid-svg-icons";
 
 export default function DetailsProduct() {
 
@@ -16,10 +16,18 @@ export default function DetailsProduct() {
     const [toComment, setToComment] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [size, setSize] = useState(36);
-    const [cart, setCart] = useState([]);
     const [yourCart, setYourCart] = useState(false);
     const [rating, setRating] = useState(null);
-    const [description ,setDescription] = useState(true);
+    const [description, setDescription] = useState(true);
+    const [toOrder, setToOrder] = useState(false);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [address, setAddress] = useState('');
+    const [nameOfCus, setNameOfCus] = useState('');
+    const [PhNb, setPhNb] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [selectedVoucher, setSelectedVoucher] = useState(false);
+    const [selectedVoucherInfo, setSelectedVoucherInfo] = useState(null);
+    const [vouchers, setVouchers] = useState([]);
 
     const handleRatingChange = (value) => {
         setRating(value);
@@ -39,30 +47,19 @@ export default function DetailsProduct() {
     }, [id])
 
     useEffect(() => {
-        axios.get('/user-cart').then(response => {
-            setCart(response.data);
-        });
-    }, [cart])
+        axios.get('/api/voucher').then(response => {
+            setVouchers(response.data);
+        })
+    })
 
-    const quantiyOfCart = cart.length;
+    // const quantiyOfCart = cart.length;
+    const finalPrice = parseInt(products.price) * quantity
 
-    function increment() {
-        var input = document.getElementById('quantityInput');
-        var value = parseInt(input.value, 10);
-        if (value < 5) {
-            input.value = value + 1;
-        }
-        if (value === 5) {
-            setError('You can only select up to 5 products')
-        }
+    function showOrder() {
+        setToOrder(true);
     }
-
-    function decrement() {
-        var input = document.getElementById('quantityInput');
-        var value = parseInt(input.value, 10);
-        if (value > 1) {
-            input.value = value - 1;
-        }
+    function hideOrder() {
+        setToOrder(false);
     }
 
     function GotoComment() {
@@ -79,20 +76,17 @@ export default function DetailsProduct() {
         }
     }
 
-    function showCart() {
-        setYourCart(true);
+    function showListVoucher() {
+        setSelectedVoucher(true);
     }
-    function hideCart() {
-        setYourCart(false);
+    function hideListVoucher() {
+        setSelectedVoucher(false);
     }
 
-    function handleCart() {
-        if (yourCart) {
-            hideCart();
-        } else {
-            showCart();
-        }
-    }
+    function selectVoucher(voucher) {
+        setSelectedVoucherInfo(voucher);
+        hideListVoucher();
+    }   
 
     async function handleAddToCart(ev) {
         ev.preventDefault();
@@ -109,11 +103,33 @@ export default function DetailsProduct() {
         }
     }
 
-    
+    async function handleOrder(ev) {
+        ev.preventDefault();
+        try {
+            const calculatedTotalPrice = selectedVoucherInfo
+                ? finalPrice * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100
+                : finalPrice
+
+            await axios.post('/api/order', {
+                productId: products.id,
+                quantity: quantity,
+                addVoucher: selectedVoucherInfo ? selectedVoucherInfo.valueVoucher : 'none',
+                totalPrice: calculatedTotalPrice,
+                address,
+                PhNb,
+                nameOfCus,
+                paymentMethod,
+            })
+            alert('Success');
+            // window.location.reload();
+        } catch (error) {
+            alert('wrong')
+
+        }
+    }
 
     return (
         <>
-
             <div className="dp-container">
                 <Navbar />
                 <div className="dp-product">
@@ -206,7 +222,7 @@ export default function DetailsProduct() {
                                   9-20 20v44H272c-11 0-20 9-20 20z"/>
                                 </svg>
                             </button>
-                            <button className="order-now">
+                            <button onClick={showOrder} className="order-now">
                                 <h4>Order now</h4>
                                 <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 448 512" fill="green">
                                     <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 
@@ -214,6 +230,106 @@ export default function DetailsProduct() {
                                 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
                                 </svg>
                             </button>
+                            {
+                                toOrder &&
+                                <div className="overlay">
+                                    <div className="dtPro-order">
+                                        <div onClick={hideOrder} className="dtPro-hide-order">
+                                            <FontAwesomeIcon icon={faX} />
+                                        </div>
+                                        <div className="dtPro-main">
+                                            <div className="dtPro-main-os">
+                                                <b className="os-title">Order summary</b>
+                                                <div className="os-img">
+                                                    <img src={'http://localhost:4000/' + products.imagePaths[0]} alt="" />
+                                                </div>
+                                                <div className="os-pro-info">
+                                                    <div className="os-pro-name-and-price">
+                                                        <div>{products.name}</div>
+                                                        <div>{products.price}</div>
+                                                    </div>
+                                                    <div className="os-pro-gender-and-quantity">
+                                                        <div>{size}</div>
+                                                        <div>Qty: {quantity}</div>
+                                                    </div>
+                                                    <div className="os-select-voucher" onClick={showListVoucher} >
+                                                        {selectedVoucherInfo ? (
+                                                            <div>
+                                                                {selectedVoucherInfo.title} - {selectedVoucherInfo.valueVoucher}%
+                                                            </div>
+                                                        ) : (
+                                                            <div>Select voucher to receive discount</div>
+                                                        )}
+                                                    </div>
+                                                    {selectedVoucher && (
+                                            <div className="overlay">
+                                                <div className="os-list-vouchers">
+                                                    <div className="icon-hide-list-voucher"
+                                                        onClick={hideListVoucher}>
+                                                        <FontAwesomeIcon style={{ color: 'red' }} icon={faX} />
+                                                    </div>
+                                                    {vouchers.length > 0 && vouchers.map(voucher => (
+                                                        <div className="os-voucher" key={voucher} onClick={() => selectVoucher(voucher)}>
+                                                            <div className="voucher-details">
+                                                                <div className="voucher-percent">
+                                                                    <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                </div>
+                                                                <div className="voucher-des">
+                                                                    <div className="voucher-title">{voucher.title}</div>
+                                                                    <div className="">{voucher.description}</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                                    <div className="os-pro-price">
+                                                        <b>
+                                                            <b>Total Price:</b>  {selectedVoucherInfo ? (
+                                                                <div>
+                                                                    {finalPrice * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100} $
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    {finalPrice}$
+                                                                </div>
+                                                            )}
+                                                        </b>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="dtPro-main-pd">
+                                                <b className="pd-title">Payment Details</b>
+                                                <form className="pd-content" >
+                                                    <div className="pd-address">
+                                                        <b>Shipping Address:</b>
+                                                        <input type="text" value={address} onChange={ev => setAddress(ev.target.value)} placeholder="Your Address" required />
+                                                    </div>
+                                                    <div className="pd-contact-us">
+                                                        <b>Contact Us:</b>
+                                                        <input required type="text" value={nameOfCus} onChange={ev => setNameOfCus(ev.target.value)} placeholder="Your Name" />
+                                                        <input required type="text" value={PhNb} onChange={ev => setPhNb(ev.target.value)} placeholder="Your PhNB" />
+                                                    </div>
+
+                                                    <div className="pd-payment-menthod">
+                                                        <b>Payments Menthod:</b>
+                                                        <div className="method-POD">
+                                                            <input type="radio" name="PaymentsMethod" value='POD' onChange={ev => setPaymentMethod(ev.target.value)} required />POD
+                                                        </div>
+                                                        <div className="method-QR">
+                                                            <input type="radio" name="PaymentsMethod" value='QRCODE' onChange={ev => setPaymentMethod(ev.target.value)} required />QR CODE:
+                                                        </div>
+                                                    </div>
+                                                    <div className="pd-button">
+                                                        <button>Continue</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                     {toComment &&
@@ -273,7 +389,7 @@ export default function DetailsProduct() {
 
                     </ul>
                     <div className="dp-handle-details-content">
-                        {products.description}
+                        {/* {products.description} */}
                     </div>
                 </div>
 

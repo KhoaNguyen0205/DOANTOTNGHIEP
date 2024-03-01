@@ -7,6 +7,8 @@
 @import url('./Css/filter.css');
 @import url('./Css/adminProduct.css');
 @import url('./Css/voucher.css');
+@import url('./Css/personal.css');
+@import url('./Css/adminOrderManage.css');
 /*-------Login */
 .login-container {
     width: 100%;
@@ -177,7 +179,7 @@
     width: 100%;
     position: absolute;
     left: 0;
-    margin-top: 12%;
+    margin-top: 15%;
     left: 0;
 }
 .container::-webkit-scrollbar{
@@ -596,38 +598,7 @@
   margin-left: 30%;
   color: #f7160ab4;
 }
-.per-container{
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  right: 0;
-  background-color: #e3ad70;
-  margin-top: -20px;;
-}
-.per-container h2{
-  
-}
-.deli{
-  top: 0;
-  height: 100%;
-  background-color: #eb7d7d;
-}
-.or{
-  height: 100%;
-  background-color: #e8d7c5;
-}
-.deli-list{
-  margin-top: 5%;
-  border: solid 2px black;
-  width: 80%;
-  height: 75%;
-  overflow-y: auto;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-}
+
 /*Personal Page*/
 .clock {
   position: absolute;

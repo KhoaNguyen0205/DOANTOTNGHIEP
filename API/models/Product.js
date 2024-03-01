@@ -35,6 +35,10 @@ const productSchema = new mongoose.Schema({
         type: Number,
         require: true,
     },
+    iventory: {
+        type: Boolean,
+        
+    }
 },{
     timestamps:true
 })

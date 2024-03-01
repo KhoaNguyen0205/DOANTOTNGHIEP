@@ -42,8 +42,8 @@
     margin-left: 20px;
 }
 .os-img{
-    width: 55%;
-    height: 200px;
+    width: 50%;
+    height: 250px;
     background-color: rgb(210, 74, 74);
     border-bottom: solid black;
     inset: 0;
@@ -130,11 +130,11 @@
     width: 50%;
     height: 100%;
     right: 0;
-    /* background-image: url("/Images/bgpm.png"); */
+     background-image: url("/Images/bgpm.png"); 
 }
 .pd-content{
     width: auto;
-    height: 400px;
+    height: 450px;
     background-color: none;
     margin-top: 5%;
 }

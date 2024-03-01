@@ -117,7 +117,9 @@ export default function MensProduct() {
                                         <div className="product-name">
                                             {product.name}
                                         </div>
-                                        {product.price}
+                                        {product.price} <br />
+                                        {new Date(product.createdAt).toLocaleString()}
+
 
                                     </div>
                                 </Link>

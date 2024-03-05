@@ -12,6 +12,11 @@ const Favorite = require('./models/Favorite');
 const Cart = require('./models/Cart');
 const Voucher = require('./models/Voucher');
 const Order = require('./models/Order');
+const EventEmitter = require('events');
+const eventEmitter = new EventEmitter();
+
+const nodemailer = require('nodemailer');
+
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'ngockhoangockhoangockhoa';
 
@@ -36,6 +41,7 @@ mongoose.connect('mongodb+srv://ngockhoa2k2:70Vtta9W5p87avDp@cluster0.nthbrkn.mo
         console.log(error)
     })
 
+//create and manage account customer
 function getUserDataFromReq(req) {
     return new Promise((resolve, reject) => {
         jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
@@ -89,7 +95,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 });
@@ -107,6 +112,9 @@ app.get('/profile', (req, res) => {
         res.json(null);
     }
 });
+//
+
+
 
 app.post('/add-to-favorite', async (req, res) => {
     const { productId } = req.body;
@@ -149,6 +157,8 @@ app.post('/api/add-voucher', async(req,res) => {
 app.get('/api/voucher', async (req, res) => {
     res.json(await Voucher.find())
 })
+
+
 app.post ('/api/order', async(req,res) => {
     const userData = await getUserDataFromReq(req);
     const {id} = req.params;
@@ -158,15 +168,39 @@ app.post ('/api/order', async(req,res) => {
 
         const newOrder = new Order ({
             user: userData.id,
-            productId, quantity,size,addVoucher,totalPrice, address, nameOfCus,PhNb, paymentMethod, approve:false, success:false,cancled:false
+            productId, quantity,size,addVoucher,totalPrice, address, nameOfCus,PhNb, 
+            paymentMethod, approve:false,adminCheck:false, success:false,cancled:false
         });
         await newOrder.save();
+
+        eventEmitter.emit('orderSuccess', {
+            productId: productId,
+            quantity: quantity
+        });
+
         return res.status(201).json({ success: true});
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
+
+
+app.put('/order/:id', (req,res) => {
+    const {id} = req.params;
+    const {approve,success,cancled} = req.body;
+    Order.findByIdAndUpdate(id, {approve,success,cancled} , {new: true})
+        .then(newOrder => {
+            res.json(newOrder)
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(500).send('sothing wrong on server')
+        })
+})
+
+
+
 app.post('/api/add/:id/to-cart', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     const quantity = req.body.quantity;
@@ -191,7 +225,7 @@ app.post('/api/add/:id/to-cart', async (req, res) => {
             })
             res.json(newCartDoc);
         }
-    } catch (error) {
+    } catch (error) {   
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -202,6 +236,7 @@ app.get('/api/cart/:id', async(req, res) => {
     res.json(await Cart.findById(id));
 })
 
+
 const storage = multer.diskStorage({
     destination: function (req, res, cb) {
         cb(null, 'Images-Sneaker/');
@@ -211,7 +246,6 @@ const storage = multer.diskStorage({
     },
 });
 const upload = multer({ storage: storage });
-
 app.post('/api/product', upload.array('images', 3), async (req, res) => {
     const { brand, name, description, price, quantity, gender, category } = req.body;
     const imagePaths = [];
@@ -241,6 +275,17 @@ app.post('/api/product', upload.array('images', 3), async (req, res) => {
     }
 });
 
+eventEmitter.on('orderSuccess', async(orderData) => {
+    try {
+        const product = await Product.findById(orderData.productId);
+        product.quantity -= orderData.quantity;
+
+        await product.save();
+    } catch (error) {
+        console.log('Error')
+    }
+})
+
 app.get('/api/product', async (req, res) => {
     res.json(await Product.find());
 })
@@ -266,6 +311,10 @@ app.get('/user-cart', (req, res) => {
     });
 });
 
+app.get('/api/order', async ( req,res) => {
+    res.json(await Order.find());
+})
+
 app.get('/user-order', (req,res) => {
     const {token} = req.cookies;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
@@ -273,6 +322,12 @@ app.get('/user-order', (req,res) => {
         res.json(await Order.find({ user: id }))
     });
 });
+
+app.get('/api/user', async (req,res) => {
+    res.json(await User.find());
+})
+
+
 
 
 app.get('/test', (req, res) => {

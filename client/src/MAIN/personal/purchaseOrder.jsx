@@ -109,6 +109,55 @@ export default function PucharseOrder() {
                                     ))}
                             </div>
                         }
+                        {selectedItem === 'Delivering' &&
+                            <div>
+                                {pucharseOrders.length > 0 && pucharseOrders.filter(pucharseOrder => pucharseOrder.approve === true)
+                                    .map(pucharseOrder => (
+                                        <div key={pucharseOrder} >
+                                            {products.length > 0 && products.filter(product => product._id === pucharseOrder.productId)
+                                                .map(product => (
+                                                    <div key={product}>
+                                                        <div className="delivering-container">
+                                                            <div className="order-delivering">
+                                                                <div className="img-order-processing">
+                                                                    <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                                                </div>
+                                                                <div className="info-order-processing">
+                                                                    <b style={{ fontSize: '20px' }}>{product.name} - {product.price}</b>
+                                                                    <div className="product-info-order-processing">
+                                                                        x{pucharseOrder.quantity} - {pucharseOrder.size} - {pucharseOrder.totalPrice}$
+                                                                    </div>
+                                                                    <div className="customer-info-order-processing">
+                                                                        <b>{pucharseOrder.address}</b>
+                                                                        <b>{pucharseOrder.nameOfCus}-{pucharseOrder.PhNb}</b>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="handle-order-delivering">
+                                                                {pucharseOrder.adminCheck == false ? (
+                                                                     <div>
+                                                                     <b>
+                                                                         Your order is on its way to you
+                                                                     </b>
+                                                                 </div>
+                                                                ) : (
+                                                                    <div>
+                                                                       <b>The product has been delivered to you. Please confirm on the button below</b>
+                                                                       <br />
+                                                                       <button>
+                                                                            Received
+                                                                       </button>
+                                                                    </div>
+                                                                )
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    ))}
+                            </div>
+                        }
                     </div>
                 </div>
 

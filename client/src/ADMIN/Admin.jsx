@@ -65,6 +65,9 @@ export default function Admin() {
               <FontAwesomeIcon icon={faHome} className="admin-aside-icon" />Dashboard
             </Link>
           </li>
+          <li>
+            <FontAwesomeIcon icon={faBell} className="admin-aside-icon" /> Notification
+          </li>
           <li className={getItemClassName('/adminpage/product')}>
             <Link to={'/adminpage/product'}>
               <FontAwesomeIcon icon={faBoxOpen} className="admin-aside-icon" /> Product
@@ -80,9 +83,6 @@ export default function Admin() {
             <Link to={'/adminpage/order'}>
               <FontAwesomeIcon icon={faMoneyBill1Wave} className="admin-aside-icon" /> Order
             </Link>
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faBell} className="admin-aside-icon" /> Notification
           </li>
           <li>
             <FontAwesomeIcon icon={faMessage} className="admin-aside-icon" />Chat

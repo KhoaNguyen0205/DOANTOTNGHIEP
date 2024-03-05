@@ -41,17 +41,21 @@ const orderSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
   },
+  confirmed: {
+    type:Boolean,
+  },
   approve: {
     type: Boolean,
-
+  },
+  adminCheck: {
+    type:Boolean,
   },
   success: {
     type: Boolean,
   },
   cancled: {
     type: Boolean,
-  }
-
+  },
 }, {
   timestamps: true
 })

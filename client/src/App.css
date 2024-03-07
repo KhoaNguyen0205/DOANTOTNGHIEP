@@ -9,6 +9,7 @@
 @import url('./Css/voucher.css');
 @import url('./Css/personal.css');
 @import url('./Css/adminOrderManage.css');
+@import url('./Css/confirm.css');
 /*-------Login */
 .login-container {
     width: 100%;

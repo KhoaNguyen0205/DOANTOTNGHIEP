@@ -2,10 +2,7 @@ const mongoose = require('mongoose');
 const {Timestamp} = require('mongodb');
 
 const cartSchema = new mongoose.Schema({
-    user:{ 
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
-    },
+    user:{ type:mongoose.Schema.Types.ObjectId,ref:'User'},
     productId: {type: mongoose.Schema.Types.ObjectId,ref:'Product'},
     quantity:{
         type:Number,

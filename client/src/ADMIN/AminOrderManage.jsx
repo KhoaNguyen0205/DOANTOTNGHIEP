@@ -66,7 +66,7 @@ export default function AdminOrderManage() {
                     {selectedItem === 'Processing' &&
                         <div>
                             {
-                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.approve === false)
+                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.approve === false && allOrder.confirmed === true)
                                     .map(allOrder => (
                                         <div key={allOrder}>
                                             <div className="order-manage-info">

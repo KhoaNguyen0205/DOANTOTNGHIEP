@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema({
   success: {
     type: Boolean,
   },
-  cancled: {
+  canceled: {
     type: Boolean,
   },
 }, {

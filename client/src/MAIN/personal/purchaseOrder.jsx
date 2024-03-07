@@ -62,7 +62,7 @@ export default function PucharseOrder() {
                     <div>
                         {selectedItem === "Processing" &&
                             <div>
-                                {pucharseOrders.length > 0 && pucharseOrders.filter(pucharseOrder => pucharseOrder.approve === false)
+                                {pucharseOrders.length > 0 && pucharseOrders.filter(pucharseOrder => pucharseOrder.approve === false && pucharseOrder.confirmed === true)
                                     .map(pucharseOrder => (
                                         <div key={pucharseOrder} >
                                             {products.length > 0 && products.filter(product => product._id === pucharseOrder.productId)

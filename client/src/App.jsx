@@ -25,6 +25,7 @@ import WomenProduct from './MAIN/Women\'sProduct'
 import MyAccount from './MAIN/personal/myAccount'
 import PucharseOrder from './MAIN/personal/purchaseOrder'
 import AdminOrderManage from './ADMIN/AminOrderManage'
+import ConfirmOrder from './confirmOrder'
 
 axios.defaults.baseURL = 'http://localhost:4000/'
 axios.defaults.withCredentials = true;
@@ -66,6 +67,7 @@ function App() {
         <Route path='/adminpage/voucher' element={<Voucher />} />
         <Route path='admin-home' element={<AdminHome />} />
         <Route path='navigation' element={<NavigationBar />} />
+        <Route path='/confirm-order/:id' element={<ConfirmOrder />} />
       </Routes>
     </UserContextProvider>
 

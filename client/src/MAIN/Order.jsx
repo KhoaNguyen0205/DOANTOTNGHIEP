@@ -87,7 +87,7 @@ export default function OrderPage() {
                 nameOfCus,
                 paymentMethod,
             })
-            alert('Success');
+            alert('Order successfully. Please confirm the order in your email');
             // window.location.reload();
         } catch (error) {
             alert('wrong')

@@ -16,7 +16,7 @@ export default function MensProduct() {
         axios.get('/api/product').then(response => {
             setProducts(response.data);
         })
-    }, [])
+    }, [products])
 
     const handleBrandChange = (brand) => {
         const isChecked = selectedBrands.includes(brand);

@@ -12,6 +12,7 @@ export default function Admin() {
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState(null);
 
+
   useEffect(() => {
     // Khi location thay đổi, cập nhật selectedItem
     const path = location.pathname;
@@ -26,11 +27,11 @@ export default function Admin() {
       case 'adminpage':
         return 'Dashboard';
       case 'adminpage/product':
-        return 'Product';
+        return 'Product Management';
       case 'adminpage/voucher':
         return 'Voucher';
       case 'adminpage/order':
-        return 'Order Management'
+        return 'Order Management';
 
     }
   }
@@ -65,8 +66,10 @@ export default function Admin() {
               <FontAwesomeIcon icon={faHome} className="admin-aside-icon" />Dashboard
             </Link>
           </li>
-          <li>
+          <li className={getItemClassName('/adminpage/notification')}>
+            <Link to={'/adminpage/notification'}>
             <FontAwesomeIcon icon={faBell} className="admin-aside-icon" /> Notification
+            </Link>
           </li>
           <li className={getItemClassName('/adminpage/product')}>
             <Link to={'/adminpage/product'}>
@@ -92,8 +95,17 @@ export default function Admin() {
               <FontAwesomeIcon icon={faTicket} className="admin-aside-icon" /> Voucher
             </Link>
           </li>
+          <li className={getItemClassName('/adminpage/voucher')}>
+            <Link to={'/adminpage/voucher'}>
+              <FontAwesomeIcon icon={faTicket} className="admin-aside-icon" /> Inventory
+            </Link>
+          </li>
         </ul>
       </aside>
+
+      <div>
+        ádsad
+      </div>
     </div>
   );
 }

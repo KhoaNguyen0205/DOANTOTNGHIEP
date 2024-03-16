@@ -44,6 +44,18 @@ export default function AdminOrderManage() {
             })
     }
 
+    const adminCheckOrder = (id) => {
+        axios.put(`/order/${id}`, { adminCheck: true })
+            .then(response => {
+                console.log(response.data);
+                alert('The order has been confirmed by Admin to be delivered successfully')
+            })
+            .catch(error => {
+                console.log(error);
+                alert('Wrong')
+            })
+    }
+
     return (
         <>
             <Admin />
@@ -112,7 +124,7 @@ export default function AdminOrderManage() {
                     {selectedItem === 'Delivering' &&
                         <div>
                             {
-                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.approve === true)
+                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.approve === true && allOrder.adminCheck === false)
                                     .map(allOrder => (
                                         <div key={allOrder}>
                                             <div className="order-manage-info">
@@ -143,7 +155,7 @@ export default function AdminOrderManage() {
                                                         </div>
                                                     ))}
                                                 <div className="approve-order-processing">
-                                                    <button>
+                                                    <button onClick={() => adminCheckOrder(allOrder._id)} >
                                                         Delivered <FontAwesomeIcon icon={faCheck} />
                                                     </button>
                                                 </div>

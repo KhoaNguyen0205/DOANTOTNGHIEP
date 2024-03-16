@@ -29,12 +29,6 @@ export default function PucharseOrder() {
         })
     })
 
-    function onChoice() {
-        setChoice(true);
-    }
-    function hideChoice() {
-        setChoice(false)
-    }
 
     return (
         <>
@@ -68,40 +62,33 @@ export default function PucharseOrder() {
                                             {products.length > 0 && products.filter(product => product._id === pucharseOrder.productId)
                                                 .map(product => (
                                                     <div key={product}>
-                                                        <div>
-                                                            {!choice ? (
-                                                                <>
-                                                                    <div className="order-processing" onDoubleClick={onChoice} title="Double click to select options">
-                                                                        <div className="img-order-processing">
-                                                                            <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                                        <div className="pucharseOrder-container">
+                                                            <div className="bill-and-animation">
+                                                                <div className="pucharseOrder-bill">
+                                                                    <div className="img-pucharseOrder-bill">
+                                                                        <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                                                    </div>
+                                                                    <div className="info-pucharseOrder-bill">
+                                                                        <b style={{ fontSize: '20px' }}>{product.name} - {product.price}</b>
+                                                                        <div className="product-info-pucharseOrder-bill">
+                                                                            x{pucharseOrder.quantity} - {pucharseOrder.size} - {pucharseOrder.totalPrice}$
                                                                         </div>
-                                                                        <div className="info-order-processing">
-                                                                            <b style={{ fontSize: '20px' }}>{product.name} - {product.price}</b>
-                                                                            <div className="product-info-order-processing">
-                                                                                x{pucharseOrder.quantity} - {pucharseOrder.size} - {pucharseOrder.totalPrice}$
-                                                                            </div>
-                                                                            <div className="customer-info-order-processing">
-                                                                                <b>{pucharseOrder.address}</b>
-                                                                                <b>{pucharseOrder.nameOfCus}-{pucharseOrder.PhNb}</b>
-                                                                            </div>
+                                                                        <div className="customer-info-pucharseOrder-bill">
+                                                                            <b>{pucharseOrder.address}</b>
+                                                                            <b>{pucharseOrder.nameOfCus}-{pucharseOrder.PhNb}</b>
                                                                         </div>
                                                                     </div>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <div className="order-processing" onDoubleClick={hideChoice} title="Double click to info order pucharse">
-                                                                        <div className="btn-select-options">
-                                                                            <button style={{ backgroundColor: '#ff6666' }}>
-                                                                                <FontAwesomeIcon icon={faCancel} /> Delete
-                                                                            </button>
-
-                                                                            <button style={{ backgroundColor: '#bfff80' }}>
-                                                                                <FontAwesomeIcon icon={faEdit} /> Edit
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            )}
+                                                                </div>
+                                                                <div className="animation-pucharseOrder">
+                                                                    <img src="https://blog.staktradefinance.com/wp-content/uploads/2019/10/reality.gif" alt="" />
+                                                                </div>
+                                                            </div>
+                                                            <div className="notification-pucharseOrder">
+                                                                <b>Order is awaiting confirmation</b>
+                                                                <button>
+                                                                    <FontAwesomeIcon style={{color:'#ff6363'}} icon={faCancel} /> Cancel
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -117,23 +104,28 @@ export default function PucharseOrder() {
                                             {products.length > 0 && products.filter(product => product._id === pucharseOrder.productId)
                                                 .map(product => (
                                                     <div key={product}>
-                                                        <div className="delivering-container">
-                                                            <div className="order-delivering">
-                                                                <div className="img-order-processing">
+                                                    <div className="pucharseOrder-container">
+                                                        <div className="bill-and-animation">
+                                                            <div className="pucharseOrder-bill">
+                                                                <div className="img-pucharseOrder-bill">
                                                                     <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
                                                                 </div>
-                                                                <div className="info-order-processing">
+                                                                <div className="info-pucharseOrder-bill">
                                                                     <b style={{ fontSize: '20px' }}>{product.name} - {product.price}</b>
-                                                                    <div className="product-info-order-processing">
+                                                                    <div className="product-info-pucharseOrder-bill">
                                                                         x{pucharseOrder.quantity} - {pucharseOrder.size} - {pucharseOrder.totalPrice}$
                                                                     </div>
-                                                                    <div className="customer-info-order-processing">
+                                                                    <div className="customer-info-pucharseOrder-bill">
                                                                         <b>{pucharseOrder.address}</b>
                                                                         <b>{pucharseOrder.nameOfCus}-{pucharseOrder.PhNb}</b>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="handle-order-delivering">
+                                                            <div className="animation-pucharseOrder">
+                                                               <img src="https://cdn.dribbble.com/userupload/3249160/file/original-54e6c1d18d61f8f8aa2ed95caaf197ae.gif" alt="" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="notification-pucharseOrder">
                                                                 {pucharseOrder.adminCheck == false ? (
                                                                      <div>
                                                                      <b>
@@ -151,8 +143,8 @@ export default function PucharseOrder() {
                                                                 )
                                                                 }
                                                             </div>
-                                                        </div>
                                                     </div>
+                                                </div>
                                                 ))}
                                         </div>
                                     ))}

@@ -16,8 +16,10 @@ const EventEmitter = require('events');
 const eventEmitter = new EventEmitter();
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
-const socketIO = require('socket.io');
 
+const http = require('http');
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'ngockhoangockhoangockhoa';
@@ -42,6 +44,24 @@ mongoose.connect('mongodb+srv://ngockhoa2k2:70Vtta9W5p87avDp@cluster0.nthbrkn.mo
     }).catch((error) => {
         console.log(error)
     })
+
+io.on('connection', (socket) => {
+    console.log('A clinet connected');
+
+    socket.on('confirmed', (orderId) => {
+        Order.findById(orderId)
+            .then((order) => {
+                if (order.confirmed) {
+                    io.emit('newOrder', {
+                        message: 'Admin, Bạn có đơn hàng cần xác nhận',
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    });
+})
 
 //create and manage account customer
 function getUserDataFromReq(req) {
@@ -115,8 +135,6 @@ app.get('/profile', (req, res) => {
     }
 });
 //
-
-
 
 app.post('/add-to-favorite', async (req, res) => {
     const { productId } = req.body;
@@ -231,6 +249,7 @@ eventEmitter.once('orderSuccess', async (orderData) => {
         console.log('Error processing order success event:', error);
     }
 });
+
 app.get('/api/confirm-order/:productId', async (req, res) => {
     const { productId } = req.params;
 
@@ -240,11 +259,9 @@ app.get('/api/confirm-order/:productId', async (req, res) => {
             { $set: { confirmed: true } },
             { new: true }
         );
-
         if (!order) {
             return res.status(404).json({ error: 'Order not found or already confirmed.' });
         }
-
         eventEmitter.emit('orderSuccess', {
             productId: productId,
             quantity: order.quantity,
@@ -269,11 +286,10 @@ cron.schedule('0 * * * *', async () => {
 });
 
 
-
 app.put('/order/:id', (req, res) => {
     const { id } = req.params;
-    const { approve, success, cancled } = req.body;
-    Order.findByIdAndUpdate(id, { approve, success, cancled }, { new: true })
+    const { approve,adminCheck,success,cancled} = req.body;
+    Order.findByIdAndUpdate(id, { approve,adminCheck,success, cancled }, { new: true })
         .then(newOrder => {
             res.json(newOrder)
         })
@@ -282,6 +298,31 @@ app.put('/order/:id', (req, res) => {
             res.status(500).send('sothing wrong on server')
         })
 })
+
+//--Notification--//
+
+//#1 notification if have a new order
+app.get('/api/notification/new-order', async (req, res) => {
+    try {
+        const newOrders = await Order.find({ confirmed: true, approve:false });
+        res.json(newOrders);
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách đơn hàng mới:', error);
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+})
+//#2 notification if out of stock
+app.get('/api/notification/out-of-stock', async(req,res) => {
+    try {
+        const stockOut = await Product.find({ quantity: { $lte: 15 } });
+        res.json(stockOut);
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm hết hàng:', error);
+        res.status(500).json({ error: 'Lỗi server' });
+      }
+})
+
+//--End-notification--//
 
 app.post('/api/add/:id/to-cart', async (req, res) => {
     const userData = await getUserDataFromReq(req);
@@ -384,6 +425,11 @@ app.get('/user-cart', (req, res) => {
 
 app.get('/api/order', async (req, res) => {
     res.json(await Order.find());
+})
+
+app.get('/api/order/:id', async(req,res) => {
+    const {id} = req.params;
+    res.json(await Order.findById(id));
 })
 
 app.get('/user-order', (req, res) => {

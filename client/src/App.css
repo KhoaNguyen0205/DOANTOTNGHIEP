@@ -10,6 +10,7 @@
 @import url('./Css/personal.css');
 @import url('./Css/adminOrderManage.css');
 @import url('./Css/confirm.css');
+@import url('./Css/AdminNotification.css');
 /*-------Login */
 .login-container {
     width: 100%;

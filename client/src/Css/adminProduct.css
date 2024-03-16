@@ -168,3 +168,44 @@
     color: white;
 }
 /*end-product*/
+.admin-product-manage{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(201, 201, 201);
+    display: flex;
+    flex-direction: row;
+}
+.admin-product-nav{
+    height: 200px;
+    width: 100px;
+    border-right: solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-weight: 700;
+}
+.admin-product-nav-item{
+    cursor: pointer;
+}
+.admin-product-nav-item:hover{
+    color: red;
+}
+
+.admin-list-product{
+    display: flex;
+    flex-direction: row;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    background-color: none;
+    overflow-y: auto;
+    height: 800px;
+}
+
+.admin-product{
+    height: 300px;
+    width: 30%;
+    background-color: white;
+    margin: 15px 2% 0 1%;
+    border: solid black 1px;
+}

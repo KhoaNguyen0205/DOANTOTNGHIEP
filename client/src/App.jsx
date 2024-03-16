@@ -26,6 +26,7 @@ import MyAccount from './MAIN/personal/myAccount'
 import PucharseOrder from './MAIN/personal/purchaseOrder'
 import AdminOrderManage from './ADMIN/AminOrderManage'
 import ConfirmOrder from './confirmOrder'
+import AdminNotification from './ADMIN/AdminNotification'
 
 axios.defaults.baseURL = 'http://localhost:4000/'
 axios.defaults.withCredentials = true;
@@ -64,6 +65,8 @@ function App() {
         <Route path='/adminpage/product' element={<AmdinProduct />} />
         <Route path='/adminpage/order' element={<AdminOrderManage/>} />
         <Route path='/adminpage/product/edit' element={<AmdinProduct />} />
+        <Route path='/adminpage/notification' element={<AdminNotification />}/>
+        <Route path='/adminpage/notification/:id' element={<AdminNotification/>} />
         <Route path='/adminpage/voucher' element={<Voucher />} />
         <Route path='admin-home' element={<AdminHome />} />
         <Route path='navigation' element={<NavigationBar />} />

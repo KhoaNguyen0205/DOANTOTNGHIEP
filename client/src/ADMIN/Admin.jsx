@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { faA, faB, faBell, faBox, faBoxOpen, faC, faChartColumn, faDashboard, faHome, faMessage, faMoneyBill, faMoneyBill1Wave, faPeopleArrows, faPeopleCarry, faPeopleGroup, faRing, faSignOut, faTicket, faTicketAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faA, faB, faBell, faBox, faBoxOpen, faC, faChartColumn,  faHome, faMessage, faMoneyBill, faMoneyBill1Wave, faPeopleArrows, faPeopleCarry, faPeopleGroup, faRing, faSignOut, faTicket, faTicketAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { UserContext } from "../userContext";
+import Dashboard from "./DashBoard";
 
 export default function Admin() {
   const [redirect, setRedirect] = useState(null);
@@ -12,6 +13,30 @@ export default function Admin() {
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const [notifNewOrders, setNotifNewOrder] = useState([]);
+  const [notifStockOuts, setNotifStockOuts] = useState([]);
+  const [notifOverStocks, setNotifOverStocks] = useState([]);
+  useEffect(() => {
+    axios.get('/api/notification/new-order').then(response => {
+      setNotifNewOrder(response.data);
+      console.log(response.data)
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get('/api/notification/out-of-stock').then(response => {
+      setNotifStockOuts(response.data);
+      console.table(response.data)
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get('/api/notification/overStock').then(response => {
+      setNotifOverStocks(response.data);
+    })
+  }, [])
+
+  const allNotif = [...notifNewOrders, ...notifOverStocks, ...notifStockOuts];
 
   useEffect(() => {
     // Khi location thay đổi, cập nhật selectedItem
@@ -67,8 +92,9 @@ export default function Admin() {
             </Link>
           </li>
           <li className={getItemClassName('/adminpage/notification')}>
-            <Link to={'/adminpage/notification'}>
-            <FontAwesomeIcon icon={faBell} className="admin-aside-icon" /> Notification
+            <div className="total-quantity-notification">{allNotif.length}</div>
+            <Link to={'/adminpage/notification'} >
+              <FontAwesomeIcon icon={faBell} className="admin-aside-icon" /> Notification
             </Link>
           </li>
           <li className={getItemClassName('/adminpage/product')}>
@@ -102,9 +128,8 @@ export default function Admin() {
           </li>
         </ul>
       </aside>
-
-      <div>
-        ádsad
+      <div className="admin-content-container">
+        <Dashboard />
       </div>
     </div>
   );

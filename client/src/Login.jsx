@@ -4,6 +4,8 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom"
 import { UserContext } from "./userContext";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeDropper, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function LoginPage() {
 
@@ -11,6 +13,23 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
     const { setUser } = useContext(UserContext);
+    const [showPass,setShowPass] = useState(false);
+
+
+    function handleShowPass() {
+        setShowPass(true);
+    }
+    function hanldeHidePass() {
+        setShowPass(false)
+    }
+
+    function showPassWord() {
+        if(showPass){
+            hanldeHidePass();
+        }else{
+            handleShowPass();
+        }
+    }
 
 
     async function handleLoginSubmit(ev) {
@@ -51,10 +70,14 @@ export default function LoginPage() {
                         placeholder="your Email@gmail.com"
                         value={email}
                         onChange={ev => setEmail(ev.target.value)} />
-                    <input type="password"
+                    <input type={showPass? 'text' : 'password'}
                         placeholder="your Password"
                         value={password}
                         onChange={ev => setPassword(ev.target.value)} />
+                    <div className="showPass" onClick={showPassWord}>
+                        <FontAwesomeIcon icon={showPass? faEye : faEyeSlash} />
+                    </div>
+                    <Link to={'/forgot-pass'} style={{color:'red', fontSize:'12px',cursor:'pointer', marginLeft:'345px', marginBottom:'10px'}}>Forgot password?</Link>
                     <button className="login-button">LOGIN</button>
                     <div className="to-register">
                         <h3>If you don't have account ?</h3>
@@ -73,7 +96,7 @@ export default function LoginPage() {
                             <div className="logo-facebook">
                                 <img src="./img-moreOption-Login/facebook.png" alt="" />
                             </div>
-                            FaceBook
+                            Facebook
                         </div>
                     </div>
                 </form>

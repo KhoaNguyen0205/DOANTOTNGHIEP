@@ -117,6 +117,76 @@ app.post('/login', async (req, res) => {
     }
 });
 
+//---forgot password---//
+app.post('/api/forgot-pass', async (req, res) => {
+    const email = req.body.email;
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    try {
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            return res.status(404).json({ error: 'Email does not exist' });
+        }
+
+        sendForgotPassEmail(existingUser.email, existingUser._id);
+        return res.status(200).json({ message: 'Password reset email sent successfully' });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+function sendForgotPassEmail(customerEmail, customerId) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'ad.ksneaker2502@gmail.com',
+            pass: 'abacvfcpsiqialfy'
+        }
+    });
+    const mailOptions = {
+        from: 'Admin K-sneaker',
+        to: customerEmail,
+        subject: 'CẢNH BÁO BẢO MẬT!!',
+        html: `<p>Xin chào ${customerEmail}</p>.
+            <p>Chúng tôi nhận được yêu cầu lấy lại mật khẩu cho tài khoản ${customerEmail}</p>.
+            <p>Vui lòng xác nhận nếu là bạn. Hãy nhấn vào link bên dưới </p>.
+            <a href="http://localhost:5173/reset-pass/${customerId}">Đặt lại mật khẩu</a>
+            <h3>Lưu ý: Nếu bạn không yêu cầu đặt lại mật khẩu. Hãy bỏ qua Email này. Xin cảm ơn </h3>.`
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+        } else {
+            console.log('Email sent: ' + info.response)
+        }
+    });
+}
+
+app.get('/api/user/:id', async (req, res) => {
+    const { id } = req.params;
+    res.json(await User.findById(id));
+})
+
+app.put('/api/user/:id', async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    const userDoc = await User.findById(id);
+
+    console.table(userDoc.email)
+    userDoc.set({
+        password: bcrypt.hashSync(password, bcryptSalt),
+    });
+    await userDoc.save();
+    res.json('success')
+})
+
+//---end forgot pass--////
+
+
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 });
@@ -200,6 +270,7 @@ app.post('/api/order', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
+
 
 function sendConfirmationEmail(customerName, customerEmail, productId) {
     const transporter = nodemailer.createTransport({
@@ -288,8 +359,8 @@ cron.schedule('0 * * * *', async () => {
 
 app.put('/order/:id', (req, res) => {
     const { id } = req.params;
-    const { approve,adminCheck,success,cancled} = req.body;
-    Order.findByIdAndUpdate(id, { approve,adminCheck,success, cancled }, { new: true })
+    const { approve, adminCheck, success, cancled } = req.body;
+    Order.findByIdAndUpdate(id, { approve, adminCheck, success, cancled }, { new: true })
         .then(newOrder => {
             res.json(newOrder)
         })
@@ -304,7 +375,7 @@ app.put('/order/:id', (req, res) => {
 //#1 notification if have a new order
 app.get('/api/notification/new-order', async (req, res) => {
     try {
-        const newOrders = await Order.find({ confirmed: true, approve:false });
+        const newOrders = await Order.find({ confirmed: true, approve: false });
         res.json(newOrders);
     } catch (error) {
         console.error('Lỗi khi lấy danh sách đơn hàng mới:', error);
@@ -312,15 +383,48 @@ app.get('/api/notification/new-order', async (req, res) => {
     }
 })
 //#2 notification if out of stock
-app.get('/api/notification/out-of-stock', async(req,res) => {
+app.get('/api/notification/out-of-stock', async (req, res) => {
     try {
         const stockOut = await Product.find({ quantity: { $lte: 15 } });
         res.json(stockOut);
-      } catch (error) {
+    } catch (error) {
         console.error('Lỗi khi lấy danh sách sản phẩm hết hàng:', error);
         res.status(500).json({ error: 'Lỗi server' });
-      }
+    }
 })
+
+//#3 notification if overStock
+app.get('/api/notification/overStock', async (req, res) => {
+    try {
+        // Lấy ngày hiện tại
+        const currentDate = new Date();
+        // Lấy ngày và tháng hiện tại
+        const currentDay = currentDate.getDate();
+        const currentMonth = currentDate.getMonth();
+
+        // Kiểm tra xem có phải từ ngày 31/3 đến ngày 20/4, 31/7 đến ngày 20/8, hoặc 30/11 đến ngày 20/12 không
+        if ((currentMonth === 2 && currentDay >= 21) ||  // Tháng 3, ngày từ 31 trở đi
+            (currentMonth === 3 && currentDay <= 30) ||  // Tháng 4, ngày đến 20
+            (currentMonth === 6 && currentDay >= 31) ||  // Tháng 7, ngày từ 31 trở đi
+            (currentMonth === 7 && currentDay <= 30) ||  // Tháng 8, ngày đến 20
+            (currentMonth === 10 && currentDay >= 30) || // Tháng 11, ngày từ 30 trở đi
+            (currentMonth === 11 && currentDay <= 31)) { // Tháng 12, ngày đến 20
+            // Nếu là khoảng thời gian cần kiểm tra, lấy danh sách sản phẩm có số lượng lớn hơn 50
+            const inventoryProducts = await Product.find({
+                quantity: { $gt: 50 }
+            });
+            res.json(inventoryProducts);
+        } else {
+            // Nếu không, trả về thông báo không phải ngày kiểm tồn kho
+            res.json({ message: 'Không phải ngày kiểm tồn kho' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+});
+
+
 
 //--End-notification--//
 
@@ -370,7 +474,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 app.post('/api/product', upload.array('images', 3), async (req, res) => {
-    const { brand, name, description, price, quantity, gender, category } = req.body;
+    const { brand, name, description, price,
+        quantity, gender, category } = req.body;
     const imagePaths = [];
 
     if (req.files) {
@@ -387,6 +492,7 @@ app.post('/api/product', upload.array('images', 3), async (req, res) => {
         price: price,
         quantity: quantity,
         imagePaths: imagePaths,
+        iventory: false,
     });
 
     try {
@@ -396,6 +502,49 @@ app.post('/api/product', upload.array('images', 3), async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Something went wrong on the server' });
     }
+});
+
+app.put('/api/product/:id', upload.array('images', 3),  async (req, res) => {
+    const productId = req.params.id;
+    const { brand, name, description, price, quantity, gender, category } = req.body;
+    const imagePaths = [];
+
+    if (req.files) {
+        req.files.forEach((file) => {
+            imagePaths.push(file.path);
+        });
+    }
+    try {
+        let product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        } else {
+            product.brand = brand;
+            product.gender = gender;
+            product.category = category;
+            product.name = name;
+            product.description = description;
+            product.price = price;
+            product.quantity = quantity;
+            product.iventory = false
+
+            if (imagePaths.length > 0) {
+                product.imagePaths = imagePaths;
+            }
+
+        }
+        await product.save();
+        res.json({ success: true, imagePaths: product.imagePaths });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Something went wrong on the server' });
+    }
+});
+
+app.delete('/api/product/:id', async (req, res) => {
+    const id = req.params.id;
+    await Product.findByIdAndRemove(id).exec();
+    res.send('delete');
 });
 
 app.get('/api/product', async (req, res) => {
@@ -427,8 +576,8 @@ app.get('/api/order', async (req, res) => {
     res.json(await Order.find());
 })
 
-app.get('/api/order/:id', async(req,res) => {
-    const {id} = req.params;
+app.get('/api/order/:id', async (req, res) => {
+    const { id } = req.params;
     res.json(await Order.findById(id));
 })
 

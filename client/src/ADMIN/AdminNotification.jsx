@@ -11,13 +11,15 @@ export default function AdminNotification() {
 
   const [notifNewOrders, setNotifNewOrder] = useState([]);
   const [notifStockOuts, setNotifStockOuts] = useState([]);
+  const [notifOverStocks, setNotifOverStocks] = useState([]);
+
   const [mergedData, setMergedData] = useState([]);
   const [detailsNotif, setDetailsNotif] = useState(false);
   const [selectedItem, setSelectedItem] = useState('newOrder');
-  const [detailsOrders,setDetailsOrders] = useState([]);
+  const [detailsOrders, setDetailsOrders] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
-  const [products,setProducts] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const chooseItem = (item) => {
     setSelectedItem(item);
@@ -38,13 +40,20 @@ export default function AdminNotification() {
   }, []);
 
   useEffect(() => {
+    axios.get('/api/notification/overStock').then(response => {
+      setNotifOverStocks(response.data);
+    })
+  }, [])
+
+
+  useEffect(() => {
     if (!id) {
-        return;
+      return;
     }
     axios.get(`/api/order/${id}`).then(response => {
-        setDetailsOrders(response.data);
+      setDetailsOrders(response.data);
     })
-}, [id])
+  }, [id])
 
   useEffect(() => {
     navigate('/adminpage/notification');
@@ -89,11 +98,11 @@ export default function AdminNotification() {
             <div className={selectedItem === 'outOfStock' ? 'notification-nav-item-click' : 'notification-nav-item'}
               onClick={() => chooseItem('outOfStock')}>Out of Stock
             </div>
-            <p className="quantity-notification">x</p>
+            <p className="quantity-notification">{notifStockOuts.length}</p>
             <div className={selectedItem === 'overStock' ? 'notification-nav-item-click' : 'notification-nav-item'}
               onClick={() => chooseItem('overStock')}>OverStock
             </div>
-            <p className="quantity-notification">x</p>
+            <p className="quantity-notification">{notifOverStocks.length}</p>
           </div>
           <div className="notification-content">
             {/* if selected notification neworder */}
@@ -116,7 +125,52 @@ export default function AdminNotification() {
                 ))}
               </div>
             )}
-            {/*------------------------------------*/}
+            {/*------------end notification neworder-----------------*/}
+
+            {/* if selected notification out of stock */}
+            {selectedItem === 'outOfStock' && (
+              <div>
+                {notifStockOuts.length > 0 && notifStockOuts.map(notifStockOut => (
+                  <Link to={'/adminpage/notification/'} className="notification" key={notifStockOut}>
+                    <div className="notification-info">
+                      <div>
+                        <FontAwesomeIcon icon={faBell} />
+                        <b>Out Of Stock!!</b>
+                      </div>
+                      <div>
+                        <div>The number of products in stock is almost out</div>
+                        <div className="notification-time">{new Date(notifStockOut.updatedAt).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* -----------End notification out of stock-------- */}
+
+             {/* if selected notification over stock */}
+            {selectedItem === 'overStock' && (
+              <div>
+                {notifOverStocks.length > 0 && notifOverStocks.map(notifOverStock => (
+                  <Link to={'/adminpage/notification/'+ notifOverStock._id} className="notification" key={notifOverStock}>
+                    <div className="notification-info">
+                      <div>
+                        <FontAwesomeIcon icon={faBell} />
+                        <b>Over Stock!!</b>
+                      </div>
+                      <div>
+                        <div>Product is in stock</div>
+                        <div className="notification-time">{new Date(notifOverStock.updatedAt).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+               
+              </div>
+            )}
+            
+            {/* -----------End notification over stock-------- */}     
 
           </div>
         </div>
@@ -126,8 +180,16 @@ export default function AdminNotification() {
               <FontAwesomeIcon icon={faX} onClick={hideDetailsNotif} />
             </div>
             <div className="dt-notification">
-                <h1>Notification's Data</h1>
-            </div>  
+            {selectedItem === 'newOrder' && (
+                <div>
+                  Hello
+                </div>
+              )}
+              {selectedItem === 'overStock' && (
+                 <div>overStock data</div>
+
+               )}
+            </div>
           </div>
         }
       </div>

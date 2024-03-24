@@ -85,11 +85,18 @@ export default function Navbar() {
                                         WOMEN
                                     </li>
                                 </Link>
-                                <Link><li>Accessories</li></Link>
-                                <Link><li>Shirt</li></Link>
-                                <Link><li>Brand</li></Link>
-                                <Link><li>Deleivery</li></Link>
-                                <Link><li>Contact</li></Link>
+                                <Link to={'/pd/accessories'}>
+                                    <li className={getItemClassName('/pd/accessories')}>
+                                        Accessories
+                                    </li>
+                                </Link>
+                                <Link to={'/pd/sneaker'}>
+                                    <li className={getItemClassName('/pd/sneaker')}>
+                                        Sneakers
+                                    </li>
+                                </Link>
+                                <Link><li>Clothes</li></Link>
+                                <Link><li>Sale</li></Link>
                             </ul>
                         </div>
                         {user ? (

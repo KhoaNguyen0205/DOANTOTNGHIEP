@@ -1,0 +1,74 @@
+.forgotPass-form{
+    position: absolute;
+    height: 80%;
+    width: 50%;
+    border: solid black;
+    inset: 0;
+    margin: auto;
+    border-radius: 20px;
+    background-color: rgb(244, 244, 244);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.forgotPass-form b{
+    font-size:  45px;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+.forgotpass-introduction{
+    width: 80%;
+    display: flex;
+    margin: 2% 0 5% 0;
+}
+.forgotPass-form input{
+    width: 80%;
+    height: 8%;
+    border-radius: 10px;
+    border: solid rgb(250, 168, 168);
+}
+.forgotPass-form button{
+    width: 81%;
+    inset: 0;
+    margin: 0 auto 0 auto;
+    border: solid black;
+    margin-top: 2%;
+    background-color: rgb(159, 226, 255);
+}
+.back-to-login{
+    height: 8%;
+    width: 80%;
+    border-radius: 5px;
+    border: solid black;
+    margin-top: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reset-pass-container{
+    position: absolute;
+    height: 80%;
+    width: 50%;
+    border: solid black;
+    inset: 0;
+    margin: auto;
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+}
+.reset-pass-form{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    inset: 0;
+    height: 30%;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 auto 0 auto;
+    margin-top: 5%;
+}
+.reset-pass-form input{
+    width: 90%;
+    height: 40px;
+    border: solid rgb(255, 194, 194);
+}

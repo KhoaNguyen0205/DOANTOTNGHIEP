@@ -68,8 +68,8 @@ export default function MensProduct() {
                             <span>Sneaker</span>
                         </div>
                         <div>
-                            <input type="checkbox" className="checkbox-filter" />
-                            <span>Clothe</span>
+                            <input type="checkbox" onChange={() => handleCategoryChange('Clothes')} className="checkbox-filter" />
+                            <span>Clothes</span>
                         </div>
                         <div>
                             <input type="checkbox" onChange={() => handleCategoryChange('Accessories')} className="checkbox-filter" />

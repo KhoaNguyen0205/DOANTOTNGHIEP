@@ -30,6 +30,18 @@ export default function PucharseOrder() {
     })
 
 
+    const successOrder = (id) => {
+        axios.put(`/order/${id}`, { success: true })
+            .then(response => {
+                console.log(response.data);
+                alert('Approve Order Successfully')
+            })
+            .catch(error => {
+                console.log(error);
+                alert('Wrong')
+            })
+    }
+
     return (
         <>
             <PersonalPage />
@@ -133,10 +145,10 @@ export default function PucharseOrder() {
                                                                      </b>
                                                                  </div>
                                                                 ) : (
-                                                                    <div>
+                                                                    <div style={{display:'flex', flexDirection:'row'}}>
                                                                        <b>The product has been delivered to you. Please confirm on the button below</b>
                                                                        <br />
-                                                                       <button>
+                                                                       <button style={{border:'solid black', backgroundColor:'#33ffad'}}>
                                                                             Received
                                                                        </button>
                                                                     </div>

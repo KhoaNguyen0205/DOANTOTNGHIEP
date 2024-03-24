@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Navbar from "../navbar";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import Cart from "./Cart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleMinus, faComment, faCommentMedical, faCommentSlash, faCommentSms, faComments, faStairs, faStar, faX } from "@fortawesome/free-solid-svg-icons";
+import { UserContext } from "../userContext";
 
 export default function DetailsProduct() {
 
@@ -28,7 +29,7 @@ export default function DetailsProduct() {
     const [selectedVoucher, setSelectedVoucher] = useState(false);
     const [selectedVoucherInfo, setSelectedVoucherInfo] = useState(null);
     const [vouchers, setVouchers] = useState([]);
-
+    const { user } = useContext(UserContext)
     const handleRatingChange = (value) => {
         setRating(value);
     };
@@ -86,7 +87,7 @@ export default function DetailsProduct() {
     function selectVoucher(voucher) {
         setSelectedVoucherInfo(voucher);
         hideListVoucher();
-    }   
+    }
 
     async function handleAddToCart(ev) {
         ev.preventDefault();
@@ -208,7 +209,9 @@ export default function DetailsProduct() {
                             <input type="number" min={1} max={5} value={quantity} onChange={ev => setQuantity(ev.target.value)} />
                         </div>
 
-                        <div className="dp-product-description-button">
+                        {user ? 
+                        (
+                            <div className="dp-product-description-button">
                             <button onClick={handleAddToCart} className="add-to-cart">
                                 <h4>Add to cart</h4>
                                 <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 576 512" fill="red">
@@ -262,28 +265,28 @@ export default function DetailsProduct() {
                                                         )}
                                                     </div>
                                                     {selectedVoucher && (
-                                            <div className="overlay">
-                                                <div className="os-list-vouchers">
-                                                    <div className="icon-hide-list-voucher"
-                                                        onClick={hideListVoucher}>
-                                                        <FontAwesomeIcon style={{ color: 'red' }} icon={faX} />
-                                                    </div>
-                                                    {vouchers.length > 0 && vouchers.map(voucher => (
-                                                        <div className="os-voucher" key={voucher} onClick={() => selectVoucher(voucher)}>
-                                                            <div className="voucher-details">
-                                                                <div className="voucher-percent">
-                                                                    <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                        <div className="overlay">
+                                                            <div className="os-list-vouchers">
+                                                                <div className="icon-hide-list-voucher"
+                                                                    onClick={hideListVoucher}>
+                                                                    <FontAwesomeIcon style={{ color: 'red' }} icon={faX} />
                                                                 </div>
-                                                                <div className="voucher-des">
-                                                                    <div className="voucher-title">{voucher.title}</div>
-                                                                    <div className="">{voucher.description}</div>
-                                                                </div>
+                                                                {vouchers.length > 0 && vouchers.map(voucher => (
+                                                                    <div className="os-voucher" key={voucher} onClick={() => selectVoucher(voucher)}>
+                                                                        <div className="voucher-details">
+                                                                            <div className="voucher-percent">
+                                                                                <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                            </div>
+                                                                            <div className="voucher-des">
+                                                                                <div className="voucher-title">{voucher.title}</div>
+                                                                                <div className="">{voucher.description}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
                                                             </div>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
+                                                    )}
                                                     <div className="os-pro-price">
                                                         <b>
                                                             <b>Total Price:</b>  {selectedVoucherInfo ? (
@@ -331,6 +334,13 @@ export default function DetailsProduct() {
                                 </div>
                             }
                         </div>
+                        ) : (
+                            <Link to={'/login'}>
+                                Login for continue
+                            </Link>
+                        )    
+                    }
+
                     </div>
                     {toComment &&
                         <div className="overlay">

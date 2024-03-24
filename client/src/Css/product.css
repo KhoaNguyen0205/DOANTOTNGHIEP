@@ -13,7 +13,6 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: 2%;
     margin-left: 5%;
 }
 
@@ -30,7 +29,6 @@
 .list-product {
     position: absolute;
     margin-left: 5%;
-    margin-top: 2%;
     right: 0;
     display: flex;
     flex-wrap: wrap;

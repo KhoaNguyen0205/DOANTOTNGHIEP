@@ -96,7 +96,7 @@ export default function WomenProduct() {
                     <div className="list-product">
                         {products.length > 0 && products
                             .filter((product) =>
-                                product.gender === 'famale' &&
+                                product.gender === 'female' &&
                                 (selectedBrands.length === 0 || selectedBrands.includes(product.brand)) &&
                                 (selectedCategory.length === 0 || selectedCategory.includes(product.category)) &&
                                 (selectedPrice.length === 0 || selectedPrice.includes(product.price) ||

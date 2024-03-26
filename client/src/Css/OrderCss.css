@@ -101,7 +101,6 @@
 }
 .icon-hide-list-voucher{
     margin-left: 95%;
-    margin-top: 1%;
     cursor: pointer;
     background-color: rgb(255, 190, 190);
     width: 30px;
@@ -112,13 +111,23 @@
     align-items: center;
 }
 .os-voucher{
-   border: solid rgb(255, 0, 0);
+   border: solid rgb(255, 114, 114);
    height: 150px;
    width: 80%; 
    margin-bottom: 5%;
    inset: 0;
    margin: auto auto 5% auto;
 }
+.hide-voucher{
+    border: solid rgb(177, 177, 177);
+    height: 150px;
+    width: 80%; 
+    margin-bottom: 5%;
+    inset: 0;
+    margin: auto auto 5% auto;
+    background-color: rgb(158, 158, 158);
+}
+
 
 .os-total-price{
     display: flex;

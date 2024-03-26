@@ -85,9 +85,14 @@ export default function SneakerProduct() {
                                         <div className="product-name">
                                             {product.name}
                                         </div>
-                                        {product.price} <br />
-                                        {product.quantity} <br />
-                                        {product.gender}
+                                        {product.iventory ? (
+                                            <div className="product-price">
+                                                <b style={{textDecoration: 'line-through', marginRight: '5px'}}>{product.price}</b> <br/>
+                                                <b>{parseInt(product.price)*0.6}$</b>
+                                            </div>
+                                        ) : (
+                                            <div className="product-price">{product.price}$</div>
+                                        )}
                                     </div>
                                 </Link>
                             ))}

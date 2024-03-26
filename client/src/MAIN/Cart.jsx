@@ -72,9 +72,16 @@ export default function Cart() {
                                     <div className="">
                                         {cart.quantity}
                                     </div>
-                                    <div className="">
-                                        {product.price}
-                                    </div>
+                                    {product.iventory ? (
+                                        <div className="">
+                                            <b style={{ textDecoration: 'line-through', marginRight: '5px' }}>{product.price}</b> <br />
+                                            <b>{parseInt(product.price) * 0.6}$</b>
+                                        </div>
+                                    ) : (
+                                        <div className="">
+                                            <b>{product.price}</b>
+                                        </div>
+                                    )}
                                     <div className="totalprice">
                                         <p> {parseInt(product.price) * cart.quantity}$</p>
                                     </div>
@@ -83,7 +90,7 @@ export default function Cart() {
                                         <Link>
                                             <FontAwesomeIcon icon={faXmark} style={{ color: 'red' }} />
                                         </Link>
-                                        <Link to={'/order/'+cart._id} target="_blank">
+                                        <Link to={'/order/' + cart._id} target="_blank">
                                             <FontAwesomeIcon icon={faMoneyCheckDollar} style={{ color: 'green' }} />
                                         </Link>
                                         <Link>

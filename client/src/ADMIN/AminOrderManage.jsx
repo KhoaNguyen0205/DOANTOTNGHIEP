@@ -91,7 +91,9 @@ export default function AdminOrderManage() {
                                                             </div>
                                                             <div className="order-manage-info-product-description">
                                                                 <b>{product.name}</b>
-                                                                <b>{product.price}</b>
+                                                                {product.iventory 
+                                                                ? ( <b>{parseInt(product.price)*0.6}$ (-40%)</b>)
+                                                                : ( <b>{product.price}</b>)}
                                                                 <b>x{allOrder.quantity} - {allOrder.size}</b>
                                                                 <b>{allOrder.totalPrice}$</b>
                                                                 <b>{allOrder.paymentMethod}</b>

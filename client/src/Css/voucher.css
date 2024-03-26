@@ -28,7 +28,7 @@
 .voucher-details{
     height: 100px;
     width: 400px;
-    border: solid red;
+    border: solid rgb(0, 0, 0);
     margin: 20px;
     display: flex;
     flex-direction: row;

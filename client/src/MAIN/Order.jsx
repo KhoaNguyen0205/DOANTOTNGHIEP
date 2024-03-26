@@ -1,6 +1,6 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useContext, useEffect, useState } from "react";
-import Navbar from "../navbar";
 import { UserContext } from "../userContext";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -16,16 +16,18 @@ export default function OrderPage() {
     const [selectedVoucherInfo, setSelectedVoucherInfo] = useState(null);
     const { id } = useParams();
     // data of order
-    const [productId, setProductId] = useState('');
-    const [quantity, setQuantity] = useState('');
-    const [size, setSize] = useState('');
-    const [totalPrice, setTotalPrice] = useState('');
-    const [addVoucher, setAddVoucher] = useState('');
+    // const [productId, setProductId] = useState('');
+    // const [quantity, setQuantity] = useState('');
+    // const [size, setSize] = useState('');
+    // const [totalPrice, setTotalPrice] = useState('');
+    // const [addVoucher, setAddVoucher] = useState('');
+
+    const [customerOrder, setCustomerOrder] = useState([]);
     const [address, setAddress] = useState('');
     const [nameOfCus, setNameOfCus] = useState('');
     const [PhNb, setPhNb] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
-
+    const [firstOrder, setFirstOrder] = useState(false);
 
     useEffect(() => {
         if (!id) {
@@ -49,6 +51,21 @@ export default function OrderPage() {
         })
     })
 
+    useEffect(() => {
+        axios.get('/user-order').then(response => {
+            setCustomerOrder(response.data);
+        })
+    })
+
+    const quantityOrder = customerOrder.length;
+    useEffect(() => {
+        if (quantityOrder === 0) {
+            setFirstOrder(true);
+        }else{
+            setFirstOrder(false)
+        }
+    }, [quantityOrder]);
+
     function showListVoucher() {
         setSelectedVoucher(true);
     }
@@ -64,17 +81,25 @@ export default function OrderPage() {
     async function handleOrder(ev) {
         ev.preventDefault();
         try {
-        const currentProduct = products.find(product => product._id === pdCart.productId);
+            const currentProduct = products.find(product => product._id === pdCart.productId);
 
-        if (!currentProduct) {
-         
-            alert('wrong');
-            return;
-        }
+            selectedVoucherInfo
+                ? parseInt(currentProduct.price) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100
+                : parseInt(currentProduct.price) * pdCart.quantity;
 
-        const calculatedTotalPrice = selectedVoucherInfo
-            ? parseInt(currentProduct.price) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100
-            : parseInt(currentProduct.price) * pdCart.quantity;
+            if (!currentProduct) {
+
+                alert('wrong');
+                return;
+            }
+
+            const calculatedTotalPrice = currentProduct.iventory
+                ? selectedVoucherInfo
+                    ? (parseInt(currentProduct.price) * 0.6) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100
+                    : (parseInt(currentProduct.price) * 0.6) * pdCart.quantity
+                : selectedVoucherInfo
+                    ? parseInt(currentProduct.price) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100
+                    : parseInt(currentProduct.price) * pdCart.quantity
 
             await axios.post('/api/order', {
                 productId: pdCart.productId,
@@ -91,7 +116,7 @@ export default function OrderPage() {
             // window.location.reload();
         } catch (error) {
             alert('wrong')
-          
+
         }
     }
 
@@ -114,8 +139,19 @@ export default function OrderPage() {
                                     <div className="os-pro-info">
                                         <div className="os-pro-name-and-price">
                                             <div>{product.name}</div>
-                                            <div>{product.price}</div>
-                                            <div style={{ display: 'none' }}>{pdCart.productId}</div>
+                                            {product.iventory ?
+                                                (
+                                                    <div>
+                                                        <b style={{ textDecoration: 'line-through', marginRight: '5px' }}>{product.price}</b>
+                                                        <b>{parseInt(product.price) * 0.6}$</b>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        {product.price}
+                                                    </div>
+                                                )
+
+                                            }
                                         </div>
                                         <div className="os-pro-gender-and-quantity">
                                             <div>{pdCart.size}</div>
@@ -137,39 +173,63 @@ export default function OrderPage() {
                                                         onClick={hideListVoucher}>
                                                         <FontAwesomeIcon style={{ color: 'red' }} icon={faX} />
                                                     </div>
-                                                    {vouchers.length > 0 && vouchers.map(voucher => (
-                                                        <div className="os-voucher" key={voucher} onClick={() => selectVoucher(voucher)}>
-                                                            <div className="voucher-details">
-                                                                <div className="voucher-percent">
-                                                                    <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                    <div className="voucher-condition">
+                                                        {vouchers.length > 0 && vouchers.filter(voucher => voucher.title === 'First Order')
+                                                            .map(voucher => (
+                                                                <div key={voucher} className={firstOrder ? "os-voucher" : "hide-voucher"} onClick={() => firstOrder && selectVoucher(voucher)} >
+                                                                    <div className="voucher-details">
+                                                                        <div className="voucher-percent">
+                                                                            <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                        </div>
+                                                                        <div className="voucher-des">
+                                                                            <div className="voucher-title">{voucher.title}</div>
+                                                                            <div className="">{voucher.description}</div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="voucher-des">
-                                                                    <div className="voucher-title">{voucher.title}</div>
-                                                                    <div className="">{voucher.description}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                            ))}
+                                                    </div>
+                                                    <div className="">
+
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         )}
                                         <div className="os-total-price">
-                                            <b>Total Price:</b>  {selectedVoucherInfo ? (
-                                                <div>
-                                                    {parseInt(product.price) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100} $
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    {parseInt(product.price) * pdCart.quantity}$
-                                                </div>
-                                            )}
+                                            <b>Total Price:</b>  {product.iventory ?
+                                                (
+                                                    <div>
+                                                        {selectedVoucherInfo ? (
+                                                            <div>
+                                                                {parseInt(product.price) * 0.6 * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100} $
+                                                            </div>
+                                                        ) : (
+                                                            <div>
+                                                                {parseInt(product.price) * 0.6 * pdCart.quantity}$
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        {selectedVoucherInfo ? (
+                                                            <div>
+                                                                {parseInt(product.price) * pdCart.quantity * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100} $
+                                                            </div>
+                                                        ) : (
+                                                            <div>
+                                                                {parseInt(product.price) * pdCart.quantity}$
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
                                 </div>
                             ))}
                     </div>
                     <div className="payment-details">
-                        <b className="pd-title">Payment Details</b>
+                        <b className="pd-title">Payment Details</b>{quantityOrder}
                         <form className="pd-content" onSubmit={handleOrder}>
                             <div className="pd-address">
                                 <b>Shipping Address:</b>

@@ -33,6 +33,7 @@ import AccessoriesProduct from './MAIN/Accessories'
 import SneakerProduct from './MAIN/Sneaker'
 import ProductForm from './Orther/productForm'
 import UpdateProduct from './ADMIN/updateProduct'
+import InventoryProduct from './MAIN/inventory'
 
 axios.defaults.baseURL = 'http://localhost:4000/'
 axios.defaults.withCredentials = true;
@@ -57,6 +58,7 @@ function App() {
           <Route path='/pd/women/' element={<WomenProduct />} />
           <Route path='/pd/accessories' element={<AccessoriesProduct/>} />
           <Route path='/pd/sneaker' element={<SneakerProduct/>} />
+          <Route path='/pd/sale' element={<InventoryProduct />} />
         </Route>
       </Routes>
 

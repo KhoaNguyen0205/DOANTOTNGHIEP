@@ -370,6 +370,19 @@ app.put('/order/:id', (req, res) => {
         })
 })
 
+app.put('/api/inventory/product/:id', (req,res) => {
+    const {id} = req.params;
+    const {iventory} = req.body;
+    Product.findByIdAndUpdate(id, {iventory}, {new: true})
+    .then(inventoryCheck => {
+        res.json(inventoryCheck)
+    })
+    .catch(error => {
+        console.error(error);
+        res.status(500).send('Something wrong on server')
+    })
+})
+
 //--Notification--//
 
 //#1 notification if have a new order
@@ -411,7 +424,8 @@ app.get('/api/notification/overStock', async (req, res) => {
             (currentMonth === 11 && currentDay <= 31)) { // Tháng 12, ngày đến 20
             // Nếu là khoảng thời gian cần kiểm tra, lấy danh sách sản phẩm có số lượng lớn hơn 50
             const inventoryProducts = await Product.find({
-                quantity: { $gt: 50 }
+                quantity: { $gt: 50 },
+                iventory: false
             });
             res.json(inventoryProducts);
         } else {

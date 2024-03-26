@@ -114,8 +114,14 @@ export default function WomenProduct() {
                                         <div className="product-name">
                                             {product.name}
                                         </div>
-                                        {product.price}
-
+                                        {product.iventory ? (
+                                            <div className="product-price">
+                                                <b style={{textDecoration: 'line-through', marginRight: '5px'}}>{product.price}</b> <br/>
+                                                <b>{parseInt(product.price)*0.6}$</b>
+                                            </div>
+                                        ) : (
+                                            <div className="product-price">{product.price}$</div>
+                                        )}
                                     </div>
                                 </Link>
                             ))}

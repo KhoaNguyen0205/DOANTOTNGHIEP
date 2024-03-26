@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
@@ -13,13 +14,13 @@ export default function AdminNotification() {
   const [notifStockOuts, setNotifStockOuts] = useState([]);
   const [notifOverStocks, setNotifOverStocks] = useState([]);
 
-  const [mergedData, setMergedData] = useState([]);
   const [detailsNotif, setDetailsNotif] = useState(false);
   const [selectedItem, setSelectedItem] = useState('newOrder');
   const [detailsOrders, setDetailsOrders] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const [products, setProducts] = useState([]);
+  const [productById, setProductById] = useState('');
 
   const chooseItem = (item) => {
     setSelectedItem(item);
@@ -44,6 +45,16 @@ export default function AdminNotification() {
       setNotifOverStocks(response.data);
     })
   }, [])
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    axios.get(`/api/product/${id}`)
+      .then(response => {
+        setProductById(response.data);
+      })
+  }, [id])
 
 
   useEffect(() => {
@@ -77,7 +88,17 @@ export default function AdminNotification() {
       setDetailsNotif(true);
     }
   }
-  const NewOrder = notifNewOrders.length;
+  
+  const adminCheckInventory = (id) => {
+    axios.put(`/api/inventory/product/${id}`,{iventory: true})
+    .then(response => {
+      console.log(response.data);
+      alert('The product has been moved to Inventory')
+    })
+    .catch(error => {
+      console.log('wrong')
+    })
+  }
 
   return (
     <>
@@ -94,7 +115,7 @@ export default function AdminNotification() {
               onClick={() => chooseItem('newOrder')}>
               <p>New Order</p>
             </div>
-            <p className="quantity-notification">{NewOrder}</p>
+            <p className="quantity-notification">{notifNewOrders.length}</p>
             <div className={selectedItem === 'outOfStock' ? 'notification-nav-item-click' : 'notification-nav-item'}
               onClick={() => chooseItem('outOfStock')}>Out of Stock
             </div>
@@ -149,11 +170,11 @@ export default function AdminNotification() {
 
             {/* -----------End notification out of stock-------- */}
 
-             {/* if selected notification over stock */}
+            {/* if selected notification over stock */}
             {selectedItem === 'overStock' && (
               <div>
                 {notifOverStocks.length > 0 && notifOverStocks.map(notifOverStock => (
-                  <Link to={'/adminpage/notification/'+ notifOverStock._id} className="notification" key={notifOverStock}>
+                  <Link to={'/adminpage/notification/' + notifOverStock._id} className="notification" key={notifOverStock}>
                     <div className="notification-info">
                       <div>
                         <FontAwesomeIcon icon={faBell} />
@@ -166,11 +187,11 @@ export default function AdminNotification() {
                     </div>
                   </Link>
                 ))}
-               
+
               </div>
             )}
-            
-            {/* -----------End notification over stock-------- */}     
+
+            {/* -----------End notification over stock-------- */}
 
           </div>
         </div>
@@ -179,17 +200,28 @@ export default function AdminNotification() {
             <div className="hideDetailsNotif">
               <FontAwesomeIcon icon={faX} onClick={hideDetailsNotif} />
             </div>
-            <div className="dt-notification">
-            {selectedItem === 'newOrder' && (
-                <div>
-                  Hello
+            {selectedItem === "overStock" && (
+              <div className="dt-notification">
+                <div className="notif-product-img">
+                <img src={'http://localhost:4000/' + productById.imagePaths[0]} alt="" />
                 </div>
-              )}
-              {selectedItem === 'overStock' && (
-                 <div>overStock data</div>
+                <div className="notif-product-info">
+                  <div>Brand:{productById.brand}</div>
+                  <div>Name:{productById.name}</div>
+                  <div>Quantity:{productById.quantity}</div>
+                  <div>Price:{productById.price}</div>
+                </div>
+                <div>
+                  <button onClick={() => adminCheckInventory(productById._id)}>Inventory</button>
+                </div>
+              </div>
+            )}
 
-               )}
-            </div>
+            {selectedItem === "newOrder" && (
+              <div className="dt-notification">
+                neworder
+              </div>
+            )}
           </div>
         }
       </div>

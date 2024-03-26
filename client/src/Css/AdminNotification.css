@@ -118,7 +118,19 @@
     height: 90%;
     width: auto;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
 }
 
+.notif-product-img{
+    height: 30%;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 0 auto;
+    filter: drop-shadow(0 0 0.75rem rgb(255, 1, 1));
+}
+.notif-product-img img{
+    height: 100%;
+    width: 75%;
+}

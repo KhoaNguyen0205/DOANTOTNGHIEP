@@ -96,7 +96,11 @@ export default function Navbar() {
                                     </li>
                                 </Link>
                                 <Link><li>Clothes</li></Link>
-                                <Link><li>Sale</li></Link>
+                                <Link to={'/pd/sale'}>
+                                    <li className={getItemClassName('/pd/sale')}>
+                                        Sale 40%
+                                    </li>
+                                </Link>
                             </ul>
                         </div>
                         {user ? (

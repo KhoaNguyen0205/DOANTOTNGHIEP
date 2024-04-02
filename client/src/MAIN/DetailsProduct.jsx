@@ -1,11 +1,13 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-redeclare */
 /* eslint-disable no-unused-vars */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Navbar from "../navbar";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import Cart from "./Cart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleMinus, faComment, faCommentMedical, faCommentSlash, faCommentSms, faComments, faStairs, faStar, faX } from "@fortawesome/free-solid-svg-icons";
+import { faCircleMinus, faComment, faCommentMedical, faCommentSlash, faCommentSms, faComments, faPaperPlane, faPlaneArrival, faStairs, faStar, faX } from "@fortawesome/free-solid-svg-icons";
 import { UserContext } from "../userContext";
 
 export default function DetailsProduct() {
@@ -30,8 +32,118 @@ export default function DetailsProduct() {
     const [selectedVoucherInfo, setSelectedVoucherInfo] = useState(null);
     const [vouchers, setVouchers] = useState([]);
     const { user } = useContext(UserContext)
-    const handleRatingChange = (value) => {
-        setRating(value);
+
+
+    const [content, setContent] = useState('');
+    const [images, setImages] = useState([null, null, null]);
+    const [rate, setRate] = useState('')
+    const [selectedImages, setSelectedImages] = useState([null, null, null]);
+    const fileInputRefs = [useRef(null), useRef(null), useRef(null)];
+    const [zoomImageIndex, setZoomImageIndex] = useState(0);
+    const [allCmt, setAllCmt] = useState([]);
+    const [customers, setCustomers] = useState([]);
+
+    const [myCmt, setMyCmt] = useState([])
+
+    useEffect(() => {
+        axios.get('/api/user-cmt').then(response => {
+            setMyCmt(response.data)
+        })
+    }, []);
+
+    useEffect(() => {
+        axios.get('/api/cmt').then(response => {
+            setAllCmt(response.data);
+        })
+    }, [allCmt])
+
+    useEffect(() => {
+        axios.get('/api/user').then(response => {
+            setCustomers(response.data)
+        })
+    })
+
+    const commented = myCmt.length > 0 && myCmt.filter(cmt => cmt.productId === id)
+    const productCmt = allCmt.length > 0 && allCmt.filter(cmt => cmt.productId === id);
+
+    const rate5s = productCmt.length > 0 && productCmt.filter(cmt => cmt.rate === 5);
+    const rate4s = productCmt.length > 0 && productCmt.filter(cmt => cmt.rate === 4);
+    const rate3s = productCmt.length > 0 && productCmt.filter(cmt => cmt.rate === 3);
+    const rate2s = productCmt.length > 0 && productCmt.filter(cmt => cmt.rate === 2);
+    const rate1s = productCmt.length > 0 && productCmt.filter(cmt => cmt.rate === 1);
+
+
+    const submitComment = (ev) => {
+        ev.preventDefault()
+        if (!content || !rate) {
+            alert('Please fill in all fields and select images.');
+            return;
+        }
+        const formData = new FormData();
+        formData.append("content", content);
+        formData.append("rate", rate);
+
+        selectedImages.forEach((image, index) => {
+            if (image) {
+                formData.append(`images`, image);
+            }
+        });
+
+        axios
+            .post(`/api/comment/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((response) => {
+                console.log(response.data);
+                alert('Updated successfully');
+            })
+            .catch((error) => {
+                console.error(error);
+                alert('Update failed');
+            });
+    }
+
+    const handleImageChange = (index, ev) => {
+        const file = ev.target.files[0];
+
+        const newSelectedImages = [...selectedImages];
+        newSelectedImages[index] = file;
+
+        setSelectedImages(newSelectedImages);
+
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const newImages = [...images];
+                newImages[index] = e.target.result;
+                setImages(newImages);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        setZoomImageIndex(index);
+    };
+    const handleRemoveImage = (index) => {
+        const newSelectedImages = [...selectedImages];
+        newSelectedImages[index] = null;
+
+        setSelectedImages(newSelectedImages);
+
+        const newImages = [...images];
+        newImages[index] = null;
+        setImages(newImages);
+
+        if (zoomImageIndex === index) {
+            setZoomImageIndex(0);
+        }
+    };
+
+    const handleStarClick = (starValue) => {
+        setRate(starValue); // Cập nhật giá trị rate khi người dùng nhấp vào ngôi sao
     };
 
     const selectImage = (index) => {
@@ -132,6 +244,8 @@ export default function DetailsProduct() {
 
         }
     }
+
+
 
     return (
         <>
@@ -302,7 +416,7 @@ export default function DetailsProduct() {
                                                                         <div>
                                                                             {selectedVoucherInfo ? (
                                                                                 <div>
-                                                                                    {(finalPrice * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100) *0.6} $ (-40%)
+                                                                                    {(finalPrice * (100 - parseInt(selectedVoucherInfo.valueVoucher)) / 100) * 0.6} $ (-40%)
                                                                                 </div>
                                                                             ) : (
                                                                                 <div>
@@ -389,30 +503,192 @@ export default function DetailsProduct() {
                                         }}
                                         onClick={HideComment} />
                                 </div>
-                                <div className="rating">
-                                    <div>Rating</div>
-                                    {[1, 2, 3, 4, 5].map((value) => (
-                                        <div key={value}>
-                                            <input
-                                                type="radio"
-                                                name="rating"
-                                                value={value}
-                                                id={`rating-${value}`}
-                                                checked={value === rating}
-                                                onChange={() => handleRatingChange(value)}
-                                            />
-                                            <label htmlFor={`rating-${value}`} className={`star ${value <= rating ? 'selected' : ''}`}>
-                                                <FontAwesomeIcon icon={faStar} />
-                                            </label>
+                                <div className="cmt-box-body">
+                                    <div className="all-cmt">
+                                        <h3>Reviews</h3>
+                                        <div className="synthetic-rate">
+                                            <div className="diagram-sythentic">
+                                                <div className="sythentic-star">
+                                                    <b>5 Star</b>
+                                                    <div className="sythentic-star-bar">
+                                                        <div className="--star-bar-color" style={{ width: `${(rate5s.length / productCmt.length) * 100}%` }}>
+                                                            {rate5s.length > 0 ? `${(rate5s.length / productCmt.length * 100).toFixed(2)}%` : ""}
+                                                        </div>
+                                                    </div>
+                                                    <b>{rate5s.length}</b>
+                                                </div>
+                                                <div className="sythentic-star">
+                                                    <b>4 Star</b>
+                                                    <div className="sythentic-star-bar">
+                                                        <div className="--star-bar-color" style={{ width: `${(rate4s.length / productCmt.length) * 100}%` }}>
+                                                            {rate4s.length > 0 ? `${(rate4s.length / productCmt.length * 100).toFixed(2)}%` : ""}
+                                                        </div>
+                                                    </div>
+                                                    <b>{rate4s.length}</b>
+                                                </div>
+                                                <div className="sythentic-star">
+                                                    <b>3 Star</b>
+                                                    <div className="sythentic-star-bar">
+                                                        <div className="--star-bar-color" style={{ width: `${(rate3s.length / productCmt.length) * 100}%` }}>
+                                                            {rate3s.length > 0 ? `${(rate3s.length / productCmt.length * 100).toFixed(2)}%` : ""}
+                                                        </div>
+                                                    </div>
+                                                    <b>{rate3s.length}</b>
+                                                </div>
+                                                <div className="sythentic-star">
+                                                    <b>2 Star</b>
+                                                    <div className="sythentic-star-bar">
+                                                        <div className="--star-bar-color" style={{ width: `${(rate2s.length / productCmt.length) * 100}%` }}>
+                                                            {rate2s.length > 0 ? `${(rate2s.length / productCmt.length * 100).toFixed(2)}%` : ""}
+                                                        </div>
+                                                    </div>
+                                                    <b>{rate2s.length}</b>
+                                                </div>
+                                                <div className="sythentic-star">
+                                                    <b>1 Star</b>
+                                                    <div className="sythentic-star-bar">
+                                                        <div className="--star-bar-color" style={{ width: `${(rate1s.length / productCmt.length) * 100}%` }}>
+                                                            {rate1s.length > 0 ? `${(rate1s.length / productCmt.length * 100).toFixed(2)}%` : ""}
+                                                        </div>
+                                                    </div>
+                                                    <b>{rate1s.length}</b>
+                                                </div>
+                                            </div>
+                                            <div className="ovr-rating">
+
+                                            </div>
+                                            <div className="">
+
+                                            </div>
                                         </div>
-                                    ))}
+                                        <div className="all-cmt-list">
+                                            {productCmt.length > 0 && productCmt.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+                                            .map(cmt => (
+                                                <div key={cmt} className="details-customer-cmt">
+                                                    {
+                                                        customers.length > 0 && customers.filter(customer => customer._id === cmt.user)
+                                                        .map(customer => (
+                                                            <div key={customer} className="--name-and-time">
+                                                                <b>{customer.name}:</b> 
+                                                               {new Date(cmt.createdAt).toLocaleString()}
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    <div className="">
+                                                        <b>Rate ({cmt.rate}/5):</b>
+                                                        {[...Array(5)].map((_, index) => (
+                                                            <span key={index} style={{ color: index < cmt.rate ? '#ff9900' : 'gray' }}>
+                                                                <FontAwesomeIcon icon={faStar} />
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div>
+                                                        {cmt.content}
+                                                    </div>
+                                                    <div>
+                                                    {cmt.image?.[0] && (
+                                                        <div className="--cmt-img">
+                                                            {cmt.image?.map((image, index) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={`http://localhost:4000/${image}`}
+                                                                    alt=""
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                        </div>
+                                    </div>
+                                    {commented.length > 0 ? (
+                                        <div className="customer-cmt">
+                                            <h3>Your Reviews</h3>
+                                            {commented.map(cmt => (
+                                                <div key={cmt} className="details-customer-cmt">
+                                                    <div className="--cmt-rate">
+                                                        <b>Rate ({cmt.rate}/5):</b>
+                                                        {[...Array(5)].map((_, index) => (
+                                                            <span key={index} style={{ color: index < cmt.rate ? '#ff9900' : 'gray' }}>
+                                                                <FontAwesomeIcon icon={faStar} />
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div className="--cmt-content">
+                                                        {cmt.content}
+                                                    </div>
+                                                    {cmt.image?.[0] && (
+                                                        <div className="--cmt-img">
+                                                            {cmt.image?.map((image, index) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={`http://localhost:4000/${image}`}
+                                                                    alt=""
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <form className="customer-cmt" onSubmit={submitComment}>
+                                                <div className="rating-and-submit">
+                                                    <div className="rating">
+                                                        {[1, 2, 3, 4, 5].map((value) => (
+                                                            <span key={value} onClick={() => handleStarClick(value)}
+                                                                className={value <= rate ? 'selected' : ''} onChange={ev => setRate(ev.target.value)}>
+                                                                {value <= rate ? '★' : '☆'}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <button>
+                                                        <FontAwesomeIcon icon={faPaperPlane} />
+                                                    </button>
+                                                </div>
+                                                <div className="input-cmt">
+                                                    <textarea placeholder="enter cmt" value={content} onChange={ev => setContent(ev.target.value)} required></textarea>
+                                                </div>
+                                                <div className="cmt-add-img">
+                                                    <div className="cmt-info-img">
+                                                        {selectedImages.map((selectedImage, index) => (
+                                                            <div className="cmt-img" key={index}>
+                                                                {!selectedImage && (
+                                                                    <label className="cmt-custom-file-upload">
+                                                                        <span>Select Image</span>
+                                                                        <input
+                                                                            type="file"
+                                                                            onChange={(ev) => handleImageChange(index, ev)}
+                                                                            ref={fileInputRefs[index]}
+                                                                            style={{ display: "none" }}
+                                                                        />
+                                                                    </label>
+                                                                )}
+                                                                {selectedImage && (
+                                                                    <div className="image-preview">
+                                                                        <img
+                                                                            src={images[index]}
+                                                                            className="img-show"
+                                                                            alt="Preview"
+                                                                            onClick={() => setZoomImageIndex(index)}
+                                                                        />
+                                                                        <div className="hideImg" onClick={() => handleRemoveImage(index)}>
+                                                                            <FontAwesomeIcon icon={faX} />
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </>
+                                    )}
                                 </div>
-                                <div className="cmt-content">
-                                    {products.description}
-                                </div>
-                                <div className="cmt-input">
-                                    {/* <textarea name="" id="" height='20px' width='100px'></textarea> */}
-                                </div>
+
                             </div>
                         </div>
                     }
@@ -420,7 +696,7 @@ export default function DetailsProduct() {
                 <div className="dp-handle-details">
                     <ul>
                         <li>Description</li>
-                        <li>Reviews</li>
+                        <li onClick={handleComment}>Reviews</li>
 
                     </ul>
                     <div className="dp-handle-details-content">

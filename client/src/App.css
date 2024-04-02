@@ -13,6 +13,23 @@
 @import url('./Css/AdminNotification.css');
 @import url('./Css/forgotpass.css');
 @import url('./Css/dashboard.css');
+@import url('./Css/adminChat.css');
+
+.test-api{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+.array-1{
+  width: 50%;
+  background-color: #e06666;
+}
+.array-2{
+  width: 50%;
+  background-color: #83e405;
+}
 
 /*-------Login */
 .login-container {
@@ -852,6 +869,5 @@
   z-index: 1;
 }
 
-.cart-footer {}
 
 /*End cart page*/

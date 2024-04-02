@@ -4,6 +4,7 @@ import PersonalPage from "./Personal";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCancel, faCheck, faDeleteLeft, faEdit, faSpinner, faTruckLoading, faTruckRampBox } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 
 export default function PucharseOrder() {
@@ -34,13 +35,16 @@ export default function PucharseOrder() {
         axios.put(`/order/${id}`, { success: true })
             .then(response => {
                 console.log(response.data);
-                alert('Approve Order Successfully')
+                alert('Thanks for your confirmed')
             })
             .catch(error => {
                 console.log(error);
                 alert('Wrong')
             })
     }
+    // const confirmReceived = (id) => {
+    //     axios.put(`/order/${id}`, {})
+    // }
 
     return (
         <>
@@ -110,7 +114,7 @@ export default function PucharseOrder() {
                         }
                         {selectedItem === 'Delivering' &&
                             <div>
-                                {pucharseOrders.length > 0 && pucharseOrders.filter(pucharseOrder => pucharseOrder.approve === true)
+                                {pucharseOrders.length > 0 && pucharseOrders.filter(pucharseOrder => pucharseOrder.approve === true && pucharseOrder.success === false)
                                     .map(pucharseOrder => (
                                         <div key={pucharseOrder} >
                                             {products.length > 0 && products.filter(product => product._id === pucharseOrder.productId)
@@ -148,8 +152,62 @@ export default function PucharseOrder() {
                                                                     <div style={{display:'flex', flexDirection:'row'}}>
                                                                        <b>The product has been delivered to you. Please confirm on the button below</b>
                                                                        <br />
-                                                                       <button style={{border:'solid black', backgroundColor:'#33ffad'}}>
+                                                                       <button style={{border:'solid black', backgroundColor:'#33ffad'}} onClick={() => successOrder(pucharseOrder._id)}>
                                                                             Received
+                                                                       </button>
+                                                                    </div>
+                                                                )
+                                                                }
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                                ))}
+                                        </div>
+                                    ))}
+                            </div>
+                        }
+                        {selectedItem === 'Success' &&
+                            <div>
+                                {pucharseOrders.length > 0 && pucharseOrders.filter(pucharseOrder => pucharseOrder.approve === true && pucharseOrder.success === true)
+                                    .map(pucharseOrder => (
+                                        <div key={pucharseOrder} >
+                                            {products.length > 0 && products.filter(product => product._id === pucharseOrder.productId)
+                                                .map(product => (
+                                                    <div key={product}>
+                                                    <div className="pucharseOrder-container">
+                                                        <div className="bill-and-animation">
+                                                            <div className="pucharseOrder-bill">
+                                                                <div className="img-pucharseOrder-bill">
+                                                                    <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                                                </div>
+                                                                <div className="info-pucharseOrder-bill">
+                                                                    <b style={{ fontSize: '20px' }}>{product.name} - {product.price}</b>
+                                                                    <div className="product-info-pucharseOrder-bill">
+                                                                        x{pucharseOrder.quantity} - {pucharseOrder.size} - {pucharseOrder.totalPrice}$
+                                                                    </div>
+                                                                    <div className="customer-info-pucharseOrder-bill">
+                                                                        <b>{pucharseOrder.address}</b>
+                                                                        <b>{pucharseOrder.nameOfCus}-{pucharseOrder.PhNb}</b>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="animation-pucharseOrder">
+                                                               <img src="https://i.gifer.com/7efs.gif" alt="" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="notification-pucharseOrder">
+                                                                {pucharseOrder.adminCheck == false ? (
+                                                                     <div>
+                                                                     <b>
+                                                                         Your order is on its way to you
+                                                                     </b>
+                                                                 </div>
+                                                                ) : (
+                                                                    <div style={{display:'flex', flexDirection:'row'}}>
+                                                                       <b>The order was delivered successfully.</b>
+                                                                       <br />
+                                                                       <button style={{border:'solid black', backgroundColor:'#ff6633'}} >
+                                                                            <Link style={{color:'black'}}  to={'/product/'+pucharseOrder.productId}>Reviews</Link>
                                                                        </button>
                                                                     </div>
                                                                 )

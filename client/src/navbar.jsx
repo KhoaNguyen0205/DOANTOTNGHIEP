@@ -1,16 +1,97 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom"
 import { UserContext } from "./userContext";
-import { faBoxOpen, faCaretDown, faCartPlus, faCartShopping, faDiamond, faHeart, faHeartBroken, faHeartCircleBolt, faHeartCrack, faHome, faHomeLgAlt, faHomeUser, faMessage, faPhone, faSearch, faStar, faTruck, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faBoxOpen, faCaretDown, faCartPlus, faCartShopping, faDiamond, faFaceSmile, faHeart, faHeartBroken, faHeartCircleBolt, faHeartCrack, faHome, faHomeLgAlt, faHomeUser, faMessage, faPaperPlane, faPhone, faSearch, faStar, faTruck, faUser, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cart from "./MAIN/Cart";
+import axios from "axios";
 
 export default function Navbar() {
     const { user } = useContext(UserContext);
     const [yourCart, setYourCart] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
+    const [mess, setMess] = useState(false);
+    const [content, setContent] = useState('')
+    const [image, setImage] = useState('');
+    const [sendMess, setSendMess] = useState([]);
+    const [receiMess, setReceiMess] = useState([]);
+    const messagesListRef = useRef(null);
+    const [prevContentHeight, setPrevContentHeight] = useState(null);
+    const [newMessage, setNewMessage] = useState(false);
+    const [allProduct, setAllProduct] = useState([]);
+    const [searching, setSearching] = useState(false)
+    const [searchKeyword, setSearchKeyword] = useState('');
+    
+
+
+    useEffect(() => {
+        axios.get('/api/product').then(response => {
+            setAllProduct(response.data)
+        })
+    })
+
+    useEffect(() => {
+        const handleEscKeyPress = (event) => {
+            if (event.keyCode === 27) { // 27 is the keycode for the 'Esc' key
+                outSearch();
+            }
+        };
+
+        document.addEventListener("keydown", handleEscKeyPress);
+
+        return () => {
+            document.removeEventListener("keydown", handleEscKeyPress);
+        };
+    }, []);
+
+    function onSearch() {
+        if (!searching) {
+            setSearching(true);
+        }
+    }
+
+    function outSearch() {
+        setSearching(false);
+    }
+
+    useEffect(() => {
+        if (messagesListRef.current) {
+            const contentHeight = messagesListRef.current.scrollHeight;
+            if (prevContentHeight !== null && contentHeight > prevContentHeight) {
+                messagesListRef.current.scrollTop = contentHeight;
+            }
+            setPrevContentHeight(contentHeight);
+        }
+    }, [sendMess, receiMess]);
+
+
+    useEffect(() => {
+        if (!user) {
+            return;
+        } else {
+            axios.get('/user-send-chats').then(response => {
+                setSendMess(response.data);
+                console.table(response.data)
+            })
+        }
+
+    }, [sendMess]);
+
+    useEffect(() => {
+        if (!user) {
+            return;
+        } else {
+            axios.get('/user-receiver-chats').then(response => {
+                setReceiMess(response.data);
+            })
+        }
+    }, [receiMess])
+
+    const allMess = [...sendMess, ...receiMess];
+    allMess.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -34,6 +115,32 @@ export default function Navbar() {
             showCart();
         }
     }
+
+    function showMess() {
+        setMess(true);
+    }
+    function hideMess() {
+        setMess(false);
+    }
+
+    async function sendMessages(ev) {
+        ev.preventDefault(ev);
+        try {
+            await axios.post('/api/chats', {
+                content
+            });
+            setContent('')
+        } catch (error) {
+            console.error(error);
+            alert('fail');
+        }
+    }
+    function handleKeyPress(ev) {
+        if (ev.key === 'Enter') {
+            sendMess(ev);
+        }
+    }
+
     return (
         <>
             <div className="nav-container">
@@ -43,8 +150,10 @@ export default function Navbar() {
                             <img src="./Images/K-sneaker.png" alt="" />
                             K-Sneaker
                         </Link>
-                        <div className="search-bar">
-                            <input type="text" name="" id="" placeholder="Search anything...." />
+                        <div className="search-bar" onClick={onSearch}>
+                            <input type="text" name="" id="" placeholder="Search anything...."
+                                value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)}
+                            />
                             <FontAwesomeIcon icon={faSearch} style={{ marginLeft: '5%' }} />
 
                         </div>
@@ -101,10 +210,12 @@ export default function Navbar() {
                                         Sale 40%
                                     </li>
                                 </Link>
+
                             </ul>
                         </div>
                         {user ? (
                             <div className="user-careAbout">
+                                <FontAwesomeIcon icon={faMessage} className="careAbout-icon" onClick={showMess} />
                                 <FontAwesomeIcon icon={faHeart} className="careAbout-icon" />
                                 <FontAwesomeIcon icon={faCartPlus}
                                     className="careAbout-icon"
@@ -139,6 +250,64 @@ export default function Navbar() {
                             </div>
                         </div>
                     }
+                    {mess &&
+                        (
+                            <div className="mess-container">
+                                <div className="mess-title">
+                                    <h3>Chat With Admin</h3>
+                                    <FontAwesomeIcon icon={faX} onClick={hideMess} style={{ color: 'red', cursor: 'pointer' }} />
+                                </div>
+                                <div className="mess-content" ref={messagesListRef}>
+                                    {allMess.length > 0 && allMess.map(chat => (
+                                        <div key={chat} className=
+                                            {chat.sender === user._id ? "message-sent-by-me" : "message-received"}
+                                        >
+                                            {/* Hiển thị thời gian tin nhắn */}
+                                            <p className="message-time">
+                                                {new Date(chat.createdAt).toLocaleString()}
+                                            </p>
+                                            {/* Hiển thị nội dung tin nhắn */}
+                                            <p className="message-content">{chat.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mess-input">
+                                    <form className="form-input-mess" onSubmit={sendMessages}>
+                                        <div className="input-img">
+                                            <FontAwesomeIcon style={{ height: '25px', color: 'white' }} icon={faAdd} />
+                                        </div>
+                                        <div className="input-text">
+
+                                            <input type="text" className="input-content" value={content}
+                                                onChange={(e) => setContent(e.target.value)} />
+
+                                        </div>
+                                        <div className="btn-send">
+                                            <FontAwesomeIcon style={{ height: '20px' }} icon={faFaceSmile} />
+                                        </div>
+                                        {/* <button>Send</button> */}
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                    {searching && (
+                        <div className="onSearch-box">
+                            {allProduct.length > 0 && allProduct
+                                .filter(product =>
+                                    (searchKeyword === '' || product.name.toLowerCase().includes(searchKeyword.toLowerCase()))
+                                )
+                                .map(product => (
+                                    <div key={product} className="product-on-search">
+                                        <div className="product-on-search-img">
+                                            <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                        </div>
+                                        <div>
+                                            {product.name}
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    )}
                 </nav>
             </div>
 

@@ -16,11 +16,10 @@ const EventEmitter = require('events');
 const eventEmitter = new EventEmitter();
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
-
-const http = require('http');
+const Chat = require('./models/Chat');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-
+const Comment = require('./models/Comments.jsx')
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'ngockhoangockhoangockhoa';
 
@@ -29,6 +28,7 @@ const jwtSecret = 'ngockhoangockhoangockhoa';
 app.use(express.json());
 app.use(cookieParser());
 app.use('/Images-Sneaker', express.static(__dirname + '/Images-Sneaker'));
+app.use('/Images-Comments', express.static(__dirname + '/Images-Comments'));
 
 app.use(cors({
     credentials: true,
@@ -370,17 +370,17 @@ app.put('/order/:id', (req, res) => {
         })
 })
 
-app.put('/api/inventory/product/:id', (req,res) => {
-    const {id} = req.params;
-    const {iventory} = req.body;
-    Product.findByIdAndUpdate(id, {iventory}, {new: true})
-    .then(inventoryCheck => {
-        res.json(inventoryCheck)
-    })
-    .catch(error => {
-        console.error(error);
-        res.status(500).send('Something wrong on server')
-    })
+app.put('/api/inventory/product/:id', (req, res) => {
+    const { id } = req.params;
+    const { iventory } = req.body;
+    Product.findByIdAndUpdate(id, { iventory }, { new: true })
+        .then(inventoryCheck => {
+            res.json(inventoryCheck)
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(500).send('Something wrong on server')
+        })
 })
 
 //--Notification--//
@@ -518,7 +518,7 @@ app.post('/api/product', upload.array('images', 3), async (req, res) => {
     }
 });
 
-app.put('/api/product/:id', upload.array('images', 3),  async (req, res) => {
+app.put('/api/product/:id', upload.array('images', 3), async (req, res) => {
     const productId = req.params.id;
     const { brand, name, description, price, quantity, gender, category } = req.body;
     const imagePaths = [];
@@ -607,7 +607,149 @@ app.get('/api/user', async (req, res) => {
     res.json(await User.find());
 })
 
+//--------------Chat-------------//
 
+//#1----Customer side
+app.post('/api/chats', async (req, res) => {
+    try {
+        const userData = await getUserDataFromReq(req);
+        const { content } = req.body;
+        const receiver = '652f946bab172e1c97cce150'
+
+        const newChat = new Chat({
+            sender: userData.id,
+            receiver,
+            content,
+        });
+        const savedChat = await newChat.save();
+        res.status(201).json(savedChat); // Return the created chat
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/user-send-chats', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        const { id } = userData;
+        res.json(await Chat.find({ sender: id }))
+    });
+});
+
+app.get('/user-receiver-chats', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        const { id } = userData;
+        res.json(await Chat.find({ receiver: id }))
+    });
+});
+
+
+//#2----Admin side
+app.get('/api/customer/send/:id', async (req, res) => {
+    const { id } = req.params;
+    res.json(await Chat.find({ sender: id }));
+});
+
+app.get('/api/customer/receiver/:id', async (req, res) => {
+    const { id } = req.params;
+    res.json(await Chat.find({ receiver: id }));
+})
+
+app.post('/api/admin/chats/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { content } = req.body;
+        const senderId = '652f946bab172e1c97cce150'
+        const newChat = new Chat({
+            sender: senderId,
+            receiver: id,
+            content,
+        });
+        const saveChat = await newChat.save();
+        res.status(201).json(saveChat); // Return the created chat
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+app.get('/api/list/customer-on-chat', async (req, res) => {
+    try {
+        const chats = await Chat.find({}, 'sender receiver');
+        
+        // Tạo một Set để lưu trữ các ID sender và receiver duy nhất
+        const uniqueIds = new Set();
+        
+        // Lặp qua mỗi bản ghi và thêm các ID vào Set
+        chats.forEach(chat => {
+            uniqueIds.add(chat.sender);
+            uniqueIds.add(chat.receiver);
+        });
+        // Chuyển đổi Set thành mảng và gửi lại response
+        res.json(Array.from(uniqueIds));
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+app.get('/api/chats', async(req,res) => {
+    res.json(await Chat.find());
+})
+
+//--------------Chat-------------//
+
+//-------------Comments---------//
+
+const storage2 = multer.diskStorage({
+    destination: function (req, res, cb) {
+        cb(null, 'Images-Comments/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    },
+});
+const upload2 = multer({ storage : storage2 });
+app.post('/api/comment/:id', upload2.array('images', 3), async(req,res) => {
+    const {content,rate} = req.body;
+    const image = [];
+    const {id} = req.params;
+    const userData = await getUserDataFromReq(req);
+
+    
+    if (req.files) {
+        req.files.forEach((file) => {
+            image.push(file.path);
+        });
+    }
+
+    const newComment = new Comment({
+        user: userData.id,
+        productId : id,
+        content,
+        rate,
+        image: image
+    });
+    try {
+        await newComment.save();
+        res.json({success: true, image: image})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Something went wrong on the server' });
+    }
+})
+
+app.get('/api/user-cmt', (req,res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        const { id } = userData;
+        res.json(await Comment.find({ user: id }))
+    });
+})
+
+app.get('/api/cmt', async(req,res) => {
+    res.json(await Comment.find());
+})
+
+//-------------End-Comments---------//
 
 
 app.get('/test', (req, res) => {

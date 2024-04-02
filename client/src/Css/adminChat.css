@@ -1,0 +1,126 @@
+.admin-chat-container {
+    height: 98%;
+    width: 98%;
+    display: flex;
+    border: solid 1px grey;
+    display: flex;
+    flex-direction: row;
+}
+
+.chat-list {
+    height: 100%;
+    width: 25%;
+    border-right: solid black;
+}
+
+.customer-chat {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    width: auto;
+    border: solid rgb(248, 215, 215);
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.messages-content-input {
+    height: 100%;
+    width: 50%;
+    background-color: beige;
+}
+
+.admin-chat-content {
+    height: 85%;
+    background-color: rgb(255, 255, 255);
+    overflow-y: auto;
+}
+
+.message-sent-by-me {
+    background-color: #ebebeb;
+    color: #020000;
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: 5%;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    max-width: 70%;
+    height: auto;
+    width: fit-content;
+    overflow-wrap: break-word;
+  }
+
+.message-received {
+    background-color: #0eabf3;
+    color: #020000;
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start; 
+    margin-bottom: 20px;
+    max-width: 70%;
+    width: fit-content; 
+    margin-left: 2%;
+    overflow-wrap: break-word;
+  }
+  
+  .message-time {
+    font-size: 0.7em; 
+    margin-top: 4px; 
+  }
+  
+  .message-content {
+    margin: 0; 
+    white-space: pre-line;
+    max-width: 100%;
+  }
+
+  .admin-input-mess{
+    height: 15%;
+    width: 96%;
+    padding: 0 2% 0 2%;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border: solid black;
+    border-radius: 20px;
+  }
+
+  .admin-input-file{
+    height: 30px;
+    width: 30px;
+    border: solid black;
+    background-color: #ffdede;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .admin-input-content{
+    height: 60%;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .admin-input-content input{
+    height: 80%;
+    width: 100%;
+  }
+
+  .admin-input-icon{
+    height: 30px;
+    width: 30px;
+    border: solid black;
+    background-color: #ffe5d7;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

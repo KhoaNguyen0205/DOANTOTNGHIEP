@@ -34,6 +34,8 @@ import SneakerProduct from './MAIN/Sneaker'
 import ProductForm from './Orther/productForm'
 import UpdateProduct from './ADMIN/updateProduct'
 import InventoryProduct from './MAIN/inventory'
+import Chat from './ADMIN/AdminChat'
+import TestList from './Orther/testChatList'
 
 axios.defaults.baseURL = 'http://localhost:4000/'
 axios.defaults.withCredentials = true;
@@ -56,8 +58,8 @@ function App() {
           <Route path='/NikeProduct' element={<NikeProduct />} />
           <Route path='/pd/men/' element={<MensProduct />} />
           <Route path='/pd/women/' element={<WomenProduct />} />
-          <Route path='/pd/accessories' element={<AccessoriesProduct/>} />
-          <Route path='/pd/sneaker' element={<SneakerProduct/>} />
+          <Route path='/pd/accessories' element={<AccessoriesProduct />} />
+          <Route path='/pd/sneaker' element={<SneakerProduct />} />
           <Route path='/pd/sale' element={<InventoryProduct />} />
         </Route>
       </Routes>
@@ -69,22 +71,28 @@ function App() {
         <Route path='/order/:id' element={<OrderPage />} />
         <Route path='/carts' element={<Cart />} />
         <Route path='/login' element={<LoginPage />} />
-        <Route path='/forgot-pass' element={<ForgotPass /> } />
+        <Route path='/forgot-pass' element={<ForgotPass />} />
         <Route path='/reset-pass/:id' element={<ResetPass />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/wcadmin' element={<Admin />} />
         <Route path='/adminpage' element={<AdminPage />} />
         <Route path='/adminpage/product' element={<AmdinProduct />} />
         <Route path='/adminpage/product/update/:id' element={<AmdinProduct />} />
-        <Route path='/adminpage/product/:id' element={<AmdinProduct />}/>
-         <Route path='/adminpage/order' element={<AdminOrderManage/>} />
+        <Route path='/adminpage/product/:id' element={<AmdinProduct />} />
+        <Route path='/adminpage/order' element={<AdminOrderManage />} />
         <Route path='/adminpage/product/edit' element={<AmdinProduct />} />
-        <Route path='/adminpage/notification' element={<AdminNotification />}/>
-        <Route path='/adminpage/notification/:id' element={<AdminNotification/>} />
+        <Route path='/adminpage/notification' element={<AdminNotification />} />
+        <Route path='/adminpage/notification/:id' element={<AdminNotification />} />
         <Route path='/adminpage/voucher' element={<Voucher />} />
+        <Route path='/adminpage/chat' element={<Chat />} />
+        <Route path='/adminpage/chat/:id' element={<Chat />} />
         <Route path='admin-home' element={<AdminHome />} />
         <Route path='navigation' element={<NavigationBar />} />
         <Route path='/confirm-order/:id' element={<ConfirmOrder />} />
+      </Routes>
+
+      <Routes>
+        <Route path='/test/ListId' element={<TestList />} />
       </Routes>
     </UserContextProvider>
 

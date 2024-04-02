@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { faA, faB, faBell, faBox, faBoxOpen, faC, faChartColumn,  faHome, faMessage, faMoneyBill, faMoneyBill1Wave, faPeopleArrows, faPeopleCarry, faPeopleGroup, faRing, faSignOut, faTicket, faTicketAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faA, faB, faBell, faBox, faBoxOpen, faC, faChartColumn, faHome, faMessage, faMoneyBill, faMoneyBill1Wave, faPeopleArrows, faPeopleCarry, faPeopleGroup, faRing, faSignOut, faTicket, faTicketAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
@@ -113,8 +113,10 @@ export default function Admin() {
               <FontAwesomeIcon icon={faMoneyBill1Wave} className="admin-aside-icon" /> Order
             </Link>
           </li>
-          <li>
-            <FontAwesomeIcon icon={faMessage} className="admin-aside-icon" />Chat
+          <li className={getItemClassName('/adminpage/chat/')}>
+            <Link to={'/adminpage/chat/'}>
+              <FontAwesomeIcon icon={faMessage} className="admin-aside-icon" />Chat
+            </Link>
           </li>
           <li className={getItemClassName('/adminpage/voucher')}>
             <Link to={'/adminpage/voucher'}>

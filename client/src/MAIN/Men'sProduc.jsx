@@ -4,7 +4,7 @@ import Navbar from "../navbar";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowAltCircleDown, faArrowAltCircleUp, faFilter } from "@fortawesome/free-solid-svg-icons";
+import { faArrowAltCircleDown, faArrowAltCircleUp, faFilter, faStar } from "@fortawesome/free-solid-svg-icons";
 
 export default function MensProduct() {
 
@@ -12,12 +12,19 @@ export default function MensProduct() {
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [selectedPrice, setSelectedPrice] = useState([]);
+    const [favorites, setFavorites] = useState([]);
+
+    useEffect(() => {
+        axios.get('/user-favorite').then(response => {
+            setFavorites(response.data)
+        })
+    }, [favorites])
+
     useEffect(() => {
         axios.get('/api/product').then(response => {
             setProducts(response.data);
         })
     }, [products])
-
     const handleBrandChange = (brand) => {
         const isChecked = selectedBrands.includes(brand);
         setSelectedBrands(isChecked ? selectedBrands.filter((b) => b !== brand) : [...selectedBrands, brand]);
@@ -31,7 +38,25 @@ export default function MensProduct() {
     const handlePriceChange = (price) => {
         const isChecked = selectedPrice.includes(price);
         setSelectedPrice(isChecked ? selectedPrice.filter((c) => c !== price) : [...selectedPrice, price]);
-    }
+    };
+
+    const addToFavorite = async (productId) => {
+        try {
+            const response = await axios.post('/add-to-favorite', {
+                productId,
+            });
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                alert('This product had on Favorite');
+            } else {
+                alert('fail');
+            }
+        }
+    };
+
+    const isProductInFavorites = (productId) => {
+        return favorites.some(favorite => favorite.productId === productId);
+    };
 
 
     return (
@@ -109,24 +134,35 @@ export default function MensProduct() {
                                 )
                             )
                             .map((product) => (
-                                <Link to={'/product/' + product._id} target="_blank" className="product" key={product}>
-                                    <div className="product-image">
+                                <div className="product" key={product}>
+                                    <Link to={'/product/' + product._id}  className="product-image">
                                         <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
-                                    </div>
-                                    <div className="">
-                                        <div className="product-name">
+                                    </Link>
+                                    <div className="product-name-and-price">
+                                        <Link to={'/product/' + product._id} target="_blank" className="product-name">
                                             {product.name}
-                                        </div>
+                                        </Link>
                                         {product.iventory ? (
                                             <div className="product-price">
-                                                <b style={{textDecoration: 'line-through', marginRight: '5px'}}>{product.price}</b> <br/>
-                                                <b>{parseInt(product.price)*0.6}$</b>
+                                                <b style={{ textDecoration: 'line-through', marginRight: '5px' }}>{product.price}</b>
+                                                <b>{parseInt(product.price) * 0.6}$</b>
                                             </div>
                                         ) : (
                                             <div className="product-price">{product.price}$</div>
                                         )}
                                     </div>
-                                </Link>
+                                    <div className="favorite-product" title="Thêm vào danh sách yêu thích">
+                                        {favorites.length > 0 && favorites.filter(favo => favo.productId === product._id)
+                                            .map(favo => (
+                                                <div key={favo}>
+                                                <FontAwesomeIcon icon={faStar} className="favorited-icon" onClick={() => addToFavorite(product._id)} />
+                                                </div>
+                                            ))}
+                                        <div>
+                                            <FontAwesomeIcon icon={faStar} className="favorite-icon" onClick={() => addToFavorite(product._id)} />
+                                        </div>
+                                    </div>
+                                </div>
                             ))}
                     </div>
                 </div>

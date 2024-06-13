@@ -1,0 +1,10 @@
+.footer-container{
+    height: 100px;
+    width: 95%;
+    inset: 0;
+    margin: 0 auto 0 auto;
+    border: solid black;
+    margin-top: 5%;
+    background-color: rgb(81, 81, 81);
+
+}

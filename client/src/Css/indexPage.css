@@ -5,7 +5,23 @@
   border: solid black;
   inset: 0;
   margin: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
+.index1 h1{
+ font-family: Verdana, Geneva, Tahoma, sans-serif;
+ background-color: rgb(217, 217, 217);
+ height: 12%;
+}
+.index1 h4{
+  color:rgb(255, 0, 0);
+  height: 5%;
+  background-color: rgb(192, 192, 192);
+  border-radius: 10px;
+}
+
 
 .shop-by-brand{
   height: 30%;

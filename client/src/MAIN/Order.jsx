@@ -28,6 +28,7 @@ export default function OrderPage() {
     const [PhNb, setPhNb] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
     const [firstOrder, setFirstOrder] = useState(false);
+    const [loyalCustomer, setLoyalCustomer] = useState(false);
 
     useEffect(() => {
         if (!id) {
@@ -57,14 +58,24 @@ export default function OrderPage() {
         })
     })
 
+    //-----condition the first order ----- //
     const quantityOrder = customerOrder.length;
     useEffect(() => {
         if (quantityOrder === 0) {
             setFirstOrder(true);
-        }else{
+        } else {
             setFirstOrder(false)
         }
     }, [quantityOrder]);
+
+    useEffect(() => {
+        if(quantityOrder > 4){
+            setLoyalCustomer(true);
+        }else{
+            setLoyalCustomer(false);
+        }
+    }, [quantityOrder])
+    //-----------------------------------//
 
     function showListVoucher() {
         setSelectedVoucher(true);
@@ -105,7 +116,7 @@ export default function OrderPage() {
                 productId: pdCart.productId,
                 quantity: pdCart.quantity,
                 size: pdCart.size,
-                addVoucher: selectedVoucherInfo ? selectedVoucherInfo.valueVoucher : 'none',
+                addVoucher: selectedVoucherInfo ? selectedVoucherInfo._id : null,
                 totalPrice: calculatedTotalPrice,
                 address,
                 PhNb,
@@ -188,6 +199,20 @@ export default function OrderPage() {
                                                                     </div>
                                                                 </div>
                                                             ))}
+                                                        {vouchers.length > 0 && vouchers.filter(voucher => voucher.title === 'Loyal Customer')
+                                                            .map(voucher => (
+                                                                <div key={voucher} className={loyalCustomer ? "os-voucher" : "hide-voucher"} onClick={() => loyalCustomer && selectVoucher(voucher)}>
+                                                                    <div className="voucher-details">
+                                                                        <div className="voucher-percent">
+                                                                            <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                        </div>
+                                                                        <div className="voucher-des">
+                                                                            <div className="voucher-title">{voucher.title}</div>
+                                                                            <div className="">{voucher.description}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
                                                     </div>
                                                     <div className="">
 
@@ -229,7 +254,7 @@ export default function OrderPage() {
                             ))}
                     </div>
                     <div className="payment-details">
-                        <b className="pd-title">Payment Details</b>{quantityOrder}
+                        <b className="pd-title">Payment Details</b>
                         <form className="pd-content" onSubmit={handleOrder}>
                             <div className="pd-address">
                                 <b>Shipping Address:</b>

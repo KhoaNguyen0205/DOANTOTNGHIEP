@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 
 import './App.css'
 import Layout from './Layout'
@@ -8,7 +8,7 @@ import RegisterPage from './Register'
 import IndexPage from './IndexPage'
 import AdminPage from './ADMIN/AdminPage'
 import axios from 'axios'
-import { UserContextProvider } from './userContext'
+import { UserContext, UserContextProvider } from './userContext'
 import PersonalPage from './MAIN/personal/Personal'
 import AdminHome from './ADMIN/AdminHome'
 import Admin from './ADMIN/Admin'
@@ -36,12 +36,16 @@ import UpdateProduct from './ADMIN/updateProduct'
 import InventoryProduct from './MAIN/inventory'
 import Chat from './ADMIN/AdminChat'
 import TestList from './Orther/testChatList'
+import { useContext, useEffect, useState } from 'react'
+import CustomerManager from './ADMIN/AdminCustomerManage'
 
 axios.defaults.baseURL = 'http://localhost:4000/'
 axios.defaults.withCredentials = true;
 
 
 function App() {
+
+  const { user } = useContext(UserContext);
 
   return (
 
@@ -74,6 +78,12 @@ function App() {
         <Route path='/forgot-pass' element={<ForgotPass />} />
         <Route path='/reset-pass/:id' element={<ResetPass />} />
         <Route path='/register' element={<RegisterPage />} />
+        <Route path='navigation' element={<NavigationBar />} />
+        <Route path='/confirm-order/:id' element={<ConfirmOrder />} />
+        <Route path='/test' element={<TestList />} />
+      </Routes>
+
+      <Routes>
         <Route path='/wcadmin' element={<Admin />} />
         <Route path='/adminpage' element={<AdminPage />} />
         <Route path='/adminpage/product' element={<AmdinProduct />} />
@@ -86,15 +96,11 @@ function App() {
         <Route path='/adminpage/voucher' element={<Voucher />} />
         <Route path='/adminpage/chat' element={<Chat />} />
         <Route path='/adminpage/chat/:id' element={<Chat />} />
+        <Route path='/adminpage/customer' element={<CustomerManager/> }/>
         <Route path='admin-home' element={<AdminHome />} />
-        <Route path='navigation' element={<NavigationBar />} />
-        <Route path='/confirm-order/:id' element={<ConfirmOrder />} />
-      </Routes>
-
-      <Routes>
-        <Route path='/test/ListId' element={<TestList />} />
       </Routes>
     </UserContextProvider>
+
 
   )
 }

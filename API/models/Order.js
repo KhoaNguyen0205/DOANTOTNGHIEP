@@ -19,7 +19,8 @@ const orderSchema = new mongoose.Schema({
     require: true,
   },
   addVoucher: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref : 'Voucher',
   },
   totalPrice: {
     type: String,

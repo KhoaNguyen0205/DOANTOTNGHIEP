@@ -3,7 +3,7 @@ import { faA, faB, faBell, faBox, faBoxOpen, faC, faChartColumn, faHome, faMessa
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../userContext";
 import Dashboard from "./DashBoard";
 
@@ -16,6 +16,15 @@ export default function Admin() {
   const [notifNewOrders, setNotifNewOrder] = useState([]);
   const [notifStockOuts, setNotifStockOuts] = useState([]);
   const [notifOverStocks, setNotifOverStocks] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.email !== 'admin@gmail.com') {
+      navigate('/');
+    }
+  }, [navigate, user]);
+
+
   useEffect(() => {
     axios.get('/api/notification/new-order').then(response => {
       setNotifNewOrder(response.data);
@@ -102,12 +111,13 @@ export default function Admin() {
               <FontAwesomeIcon icon={faBoxOpen} className="admin-aside-icon" /> Product
             </Link>
           </li>
-          <li>
-            <FontAwesomeIcon icon={faUser} className="admin-aside-icon" /> Customer
+
+          <li className={getItemClassName('/adminpage/customer')}>
+            <Link to={'/adminpage/customer'}>
+              <FontAwesomeIcon icon={faUser} className="admin-aside-icon" /> Customer
+            </Link>
           </li>
-          <li>
-            <FontAwesomeIcon icon={faChartColumn} className="admin-aside-icon" /> Charts
-          </li>
+
           <li className={getItemClassName('/adminpage/order')}>
             <Link to={'/adminpage/order'}>
               <FontAwesomeIcon icon={faMoneyBill1Wave} className="admin-aside-icon" /> Order

@@ -42,6 +42,32 @@ export default function DetailsProduct() {
     const [zoomImageIndex, setZoomImageIndex] = useState(0);
     const [allCmt, setAllCmt] = useState([]);
     const [customers, setCustomers] = useState([]);
+    const [customerOrder, setCustomerOrder] = useState([]);
+    const [firstOrder, setFirstOrder] = useState(false);
+    const [loyalCustomer, setLoyalCustomer] = useState(false);
+
+    useEffect(() => {
+        axios.get('/user-order').then(response => {
+            setCustomerOrder(response.data);
+        })
+    });
+    const quantityOrder = customerOrder.length;
+    useEffect(() => {
+        if (quantityOrder === 0) {
+            setFirstOrder(true);
+        } else {
+            setFirstOrder(false)
+        }
+    }, [quantityOrder]);
+
+    useEffect(() => {
+        if(quantityOrder > 4){
+            setLoyalCustomer(true);
+        }else{
+            setLoyalCustomer(false);
+        }
+    }, [quantityOrder])
+    //---------------------
 
     const [myCmt, setMyCmt] = useState([])
 
@@ -228,9 +254,9 @@ export default function DetailsProduct() {
                     : finalPrice
 
             await axios.post('/api/order', {
-                productId: products.id,
+                productId: id,
                 quantity: quantity,
-                addVoucher: selectedVoucherInfo ? selectedVoucherInfo.valueVoucher : 'none',
+                addVoucher: selectedVoucherInfo ? selectedVoucherInfo._id : null,
                 totalPrice: calculatedTotalPrice,
                 address,
                 PhNb,
@@ -334,10 +360,18 @@ export default function DetailsProduct() {
                         {user ?
                             (
                                 <div className="dp-product-description-button">
-                                    <button onClick={handleAddToCart} className="add-to-cart">
-                                        <h4>Add to cart</h4>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 576 512" fill="red">
-                                            <path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 
+                                    {products.quantity === 0 ? (
+                                        <>
+                                            <b>Product is temporarily out of stock</b>
+                                            <button className="add-to-cart">Add to Favorite</button>
+                                        </>
+
+                                    ) : (
+                                        <>
+                                            <button onClick={handleAddToCart} className="add-to-cart">
+                                                <h4>Add to cart</h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 576 512" fill="red">
+                                                    <path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 
                                 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 
                                 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 
                                 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7
@@ -345,16 +379,18 @@ export default function DetailsProduct() {
                                  48 0 1 1 0 96 48 48 0 1 1 0-96zM252 160c0 11 9 20 20 20h44v44c0 11 9 20 
                                  20 20s20-9 20-20V180h44c11 0 20-9 20-20s-9-20-20-20H356V96c0-11-9-20-20-20s-20
                                   9-20 20v44H272c-11 0-20 9-20 20z"/>
-                                        </svg>
-                                    </button>
-                                    <button onClick={showOrder} className="order-now">
-                                        <h4>Order now</h4>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 448 512" fill="green">
-                                            <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 
+                                                </svg>
+                                            </button>
+                                            <button onClick={showOrder} className="order-now">
+                                                <h4>Order now</h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 448 512" fill="green">
+                                                    <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 
                                 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 
                                 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
-                                        </svg>
-                                    </button>
+                                                </svg>
+                                            </button>
+                                        </>
+                                    )}
                                     {
                                         toOrder &&
                                         <div className="overlay">
@@ -371,7 +407,7 @@ export default function DetailsProduct() {
                                                         <div className="os-pro-info">
                                                             <div className="os-pro-name-and-price">
                                                                 <div>{products.name}</div>
-                                                                <div>{products.price}</div>
+                                                                <div>{products.price}$</div>
                                                             </div>
                                                             <div className="os-pro-gender-and-quantity">
                                                                 <div>{size}</div>
@@ -393,19 +429,40 @@ export default function DetailsProduct() {
                                                                             onClick={hideListVoucher}>
                                                                             <FontAwesomeIcon style={{ color: 'red' }} icon={faX} />
                                                                         </div>
-                                                                        {vouchers.length > 0 && vouchers.map(voucher => (
-                                                                            <div className="os-voucher" key={voucher} onClick={() => selectVoucher(voucher)}>
-                                                                                <div className="voucher-details">
-                                                                                    <div className="voucher-percent">
-                                                                                        <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                        <div className="voucher-condition">
+                                                                            {vouchers.length > 0 && vouchers.filter(voucher => voucher.title === 'First Order')
+                                                                                .map(voucher => (
+                                                                                    <div key={voucher} className={firstOrder ? "os-voucher" : "hide-voucher"} onClick={() => firstOrder && selectVoucher(voucher)} >
+                                                                                        <div className="voucher-details">
+                                                                                            <div className="voucher-percent">
+                                                                                                <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                                            </div>
+                                                                                            <div className="voucher-des">
+                                                                                                <div className="voucher-title">{voucher.title}</div>
+                                                                                                <div className="">{voucher.description}</div>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
-                                                                                    <div className="voucher-des">
-                                                                                        <div className="voucher-title">{voucher.title}</div>
-                                                                                        <div className="">{voucher.description}</div>
+                                                                                ))}
+                                                                            {vouchers.length > 0 && vouchers.filter(voucher => voucher.title === 'Loyal Customer')
+                                                                                .map(voucher => (
+                                                                                    <div key={voucher} className={loyalCustomer ? "os-voucher" : "hide-voucher"} onClick={() => loyalCustomer && selectVoucher(voucher)}>
+                                                                                        <div className="voucher-details">
+                                                                                            <div className="voucher-percent">
+                                                                                                <div className="voucher-value">{voucher.valueVoucher}%</div>
+                                                                                            </div>
+                                                                                            <div className="voucher-des">
+                                                                                                <div className="voucher-title">{voucher.title}</div>
+                                                                                                <div className="">{voucher.description}</div>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
+                                                                                ))}
+                                                                        </div>
+                                                                        <div className="">
+
+                                                                        </div>
+
                                                                     </div>
                                                                 </div>
                                                             )}
@@ -443,7 +500,7 @@ export default function DetailsProduct() {
                                                     </div>
                                                     <div className="dtPro-main-pd">
                                                         <b className="pd-title">Payment Details</b>
-                                                        <form className="pd-content" >
+                                                        <form className="pd-content" onSubmit={handleOrder} >
                                                             <div className="pd-address">
                                                                 <b>Shipping Address:</b>
                                                                 <input type="text" value={address} onChange={ev => setAddress(ev.target.value)} placeholder="Your Address" required />
@@ -562,44 +619,44 @@ export default function DetailsProduct() {
                                             </div>
                                         </div>
                                         <div className="all-cmt-list">
-                                            {productCmt.length > 0 && productCmt.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
-                                            .map(cmt => (
-                                                <div key={cmt} className="details-customer-cmt">
-                                                    {
-                                                        customers.length > 0 && customers.filter(customer => customer._id === cmt.user)
-                                                        .map(customer => (
-                                                            <div key={customer} className="--name-and-time">
-                                                                <b>{customer.name}:</b> 
-                                                               {new Date(cmt.createdAt).toLocaleString()}
-                                                            </div>
-                                                        ))
-                                                    }
-                                                    <div className="">
-                                                        <b>Rate ({cmt.rate}/5):</b>
-                                                        {[...Array(5)].map((_, index) => (
-                                                            <span key={index} style={{ color: index < cmt.rate ? '#ff9900' : 'gray' }}>
-                                                                <FontAwesomeIcon icon={faStar} />
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                    <div>
-                                                        {cmt.content}
-                                                    </div>
-                                                    <div>
-                                                    {cmt.image?.[0] && (
-                                                        <div className="--cmt-img">
-                                                            {cmt.image?.map((image, index) => (
-                                                                <img
-                                                                    key={index}
-                                                                    src={`http://localhost:4000/${image}`}
-                                                                    alt=""
-                                                                />
+                                            {productCmt.length > 0 && productCmt.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                                                .map(cmt => (
+                                                    <div key={cmt} className="details-customer-cmt">
+                                                        {
+                                                            customers.length > 0 && customers.filter(customer => customer._id === cmt.user)
+                                                                .map(customer => (
+                                                                    <div key={customer} className="--name-and-time">
+                                                                        <b>{customer.name}:</b>
+                                                                        {new Date(cmt.createdAt).toLocaleString()}
+                                                                    </div>
+                                                                ))
+                                                        }
+                                                        <div className="">
+                                                            <b>Rate ({cmt.rate}/5):</b>
+                                                            {[...Array(5)].map((_, index) => (
+                                                                <span key={index} style={{ color: index < cmt.rate ? '#ff9900' : 'gray' }}>
+                                                                    <FontAwesomeIcon icon={faStar} />
+                                                                </span>
                                                             ))}
                                                         </div>
-                                                    )}
+                                                        <div>
+                                                            {cmt.content}
+                                                        </div>
+                                                        <div>
+                                                            {cmt.image?.[0] && (
+                                                                <div className="--cmt-img">
+                                                                    {cmt.image?.map((image, index) => (
+                                                                        <img
+                                                                            key={index}
+                                                                            src={`http://localhost:4000/${image}`}
+                                                                            alt=""
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
 
                                         </div>
                                     </div>

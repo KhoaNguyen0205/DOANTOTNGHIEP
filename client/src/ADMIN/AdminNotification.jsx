@@ -203,7 +203,7 @@ export default function AdminNotification() {
             {selectedItem === "overStock" && (
               <div className="dt-notification">
                 <div className="notif-product-img">
-                <img src={'http://localhost:4000/' + productById.imagePaths[0]} alt="" />
+               
                 </div>
                 <div className="notif-product-info">
                   <div>Brand:{productById.brand}</div>

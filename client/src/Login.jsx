@@ -85,7 +85,7 @@ export default function LoginPage() {
                             <div>Register</div>
                         </Link>
                     </div>
-                    <div className="more-option-login">
+                    {/* <div className="more-option-login">
                         <div className="option-gmail">
                             <div className="logo-gmail">
                                 <img src="./img-moreOption-Login/gmail.png" alt="" />
@@ -98,7 +98,7 @@ export default function LoginPage() {
                             </div>
                             Facebook
                         </div>
-                    </div>
+                    </div> */}
                 </form>
             </div>
         </div>

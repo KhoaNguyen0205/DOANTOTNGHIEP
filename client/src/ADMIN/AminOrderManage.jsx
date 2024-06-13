@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Admin from "./Admin";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faSpinner, faTruckRampBox } from "@fortawesome/free-solid-svg-icons";
+import { faCancel, faCheck, faSpinner, faTruckRampBox } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
 export default function AdminOrderManage() {
@@ -73,12 +73,16 @@ export default function AdminOrderManage() {
                         onClick={() => chooseItem('Success')}>
                         <FontAwesomeIcon icon={faCheck} style={{ marginRight: '10px', height: '20px', width: '20px', color: '#39e600' }} />Success
                     </div>
+                    <div className={selectedItem === 'Cancle' ? 'order-manage-nav-item-click' : 'order-manage-nav-item'}
+                        onClick={() => chooseItem('Cancle')}>
+                          <FontAwesomeIcon icon={faCancel} style={{ marginRight: '10px', height: '20px', width: '20px', color: '#ff1a1a' }} /> Canceled
+                    </div>
                 </div>
                 <div className="order-manage-body">
                     {selectedItem === 'Processing' &&
                         <div>
                             {
-                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.approve === false && allOrder.confirmed === true)
+                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.approve === false && allOrder.confirmed === true && allOrder.canceled === false)
                                     .map(allOrder => (
                                         <div key={allOrder}>
                                             <div className="order-manage-info">
@@ -160,6 +164,93 @@ export default function AdminOrderManage() {
                                                     <button onClick={() => adminCheckOrder(allOrder._id)} >
                                                         Delivered <FontAwesomeIcon icon={faCheck} />
                                                     </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                            }
+                        </div>
+                    }
+
+                    {selectedItem === 'Success' &&
+                        <div>
+                            {
+                                AllOrders.length > 0 && AllOrders
+                                .filter(allOrder => allOrder.approve === true && allOrder.success === true)
+                                    .map(allOrder => (
+                                        <div key={allOrder}>
+                                            <div className="order-manage-info">
+
+                                                {products.length > 0 && products.filter(product => product._id == allOrder.productId)
+                                                    .map(product => (
+                                                        <div key={product} className="order-manage-info-product">
+                                                            <div className="order-manage-info-product-img">
+                                                                <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                                            </div>
+                                                            <div className="order-manage-info-product-description">
+                                                                <b>{product.name}</b>
+                                                                <b>{product.price}</b>
+                                                                <b>x{allOrder.quantity} - {allOrder.size}</b>
+                                                                <b>{allOrder.totalPrice}$</b>
+                                                                <b>{allOrder.paymentMethod}</b>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                {customers.length > 0 && customers.filter(customer => customer._id == allOrder.user)
+                                                    .map(customer => (
+                                                        <div key={customer} className="order-manage-info-customer">
+                                                            <b>Account: {customer.name}</b>
+                                                            <b>Bill: {new Date(allOrder.createdAt).toLocaleDateString()}</b>
+                                                            <b>{allOrder.address}</b>
+                                                            <b>{allOrder.PhNb}</b>
+                                                            <b>Receiver: {allOrder.nameOfCus}</b>
+                                                        </div>
+                                                    ))}
+                                                <div className="approve-order-processing">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                            }
+                        </div>
+                    }
+
+                    {selectedItem === 'Cancle' &&
+                        <div>
+                            {
+                                AllOrders.length > 0 && AllOrders.filter(allOrder => allOrder.canceled === true)
+                                    .map(allOrder => (
+                                        <div key={allOrder}>
+                                            <div className="order-manage-info">
+
+                                                {products.length > 0 && products.filter(product => product._id == allOrder.productId)
+                                                    .map(product => (
+                                                        <div key={product} className="order-manage-info-product">
+                                                            <div className="order-manage-info-product-img">
+                                                                <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
+                                                            </div>
+                                                            <div className="order-manage-info-product-description">
+                                                                <b>{product.name}</b>
+                                                                <b>{product.price}</b>
+                                                                <b>x{allOrder.quantity} - {allOrder.size}</b>
+                                                                <b>{allOrder.totalPrice}$</b>
+                                                                <b>{allOrder.paymentMethod}</b>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                {customers.length > 0 && customers.filter(customer => customer._id == allOrder.user)
+                                                    .map(customer => (
+                                                        <div key={customer} className="order-manage-info-customer">
+                                                            <b>Account: {customer.name}</b>
+                                                            <b>Bill: {new Date(allOrder.createdAt).toLocaleDateString()}</b>
+                                                            <b>{allOrder.address}</b>
+                                                            <b>{allOrder.PhNb}</b>
+                                                            <b>Receiver: {allOrder.nameOfCus}</b>
+                                                        </div>
+                                                    ))}
+                                                <div className="approve-order-processing">
+                                                  
                                                 </div>
                                             </div>
                                         </div>

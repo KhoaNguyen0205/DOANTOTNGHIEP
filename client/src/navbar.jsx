@@ -8,19 +8,19 @@ import { faAdd, faBoxOpen, faCaretDown, faCartPlus, faCartShopping, faDiamond, f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cart from "./MAIN/Cart";
 import axios from "axios";
+import ChatList from "./MAIN/Chat";
+import Favorite from "./MAIN/favorite";
+
 
 export default function Navbar() {
     const { user } = useContext(UserContext);
     const [yourCart, setYourCart] = useState(false);
+    const [favorites, setFavorites] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
     const [mess, setMess] = useState(false);
     const [content, setContent] = useState('')
     const [image, setImage] = useState('');
     const [sendMess, setSendMess] = useState([]);
-    const [receiMess, setReceiMess] = useState([]);
-    const messagesListRef = useRef(null);
-    const [prevContentHeight, setPrevContentHeight] = useState(null);
-    const [newMessage, setNewMessage] = useState(false);
     const [allProduct, setAllProduct] = useState([]);
     const [searching, setSearching] = useState(false)
     const [searchKeyword, setSearchKeyword] = useState('');
@@ -57,57 +57,22 @@ export default function Navbar() {
         setSearching(false);
     }
 
-    useEffect(() => {
-        if (messagesListRef.current) {
-            const contentHeight = messagesListRef.current.scrollHeight;
-            if (prevContentHeight !== null && contentHeight > prevContentHeight) {
-                messagesListRef.current.scrollTop = contentHeight;
-            }
-            setPrevContentHeight(contentHeight);
-        }
-    }, [sendMess, receiMess]);
-
-
-    useEffect(() => {
-        if (!user) {
-            return;
-        } else {
-            axios.get('/user-send-chats').then(response => {
-                setSendMess(response.data);
-                console.table(response.data)
-            })
-        }
-
-    }, [sendMess]);
-
-    useEffect(() => {
-        if (!user) {
-            return;
-        } else {
-            axios.get('/user-receiver-chats').then(response => {
-                setReceiMess(response.data);
-            })
-        }
-    }, [receiMess])
-
-    const allMess = [...sendMess, ...receiMess];
-    allMess.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
+
+
     const location = useLocation();
-    const getItemClassName = (path) => {
+    const getItemClassName = (path) => { 
         return location.pathname === path ? "active-item" : "";
     };
-
 
     function showCart() {
         setYourCart(true);
     }
     function hideCart() {
         setYourCart(false);
-    }
+    } 
     function handleCart() {
         if (yourCart) {
             hideCart();
@@ -139,6 +104,13 @@ export default function Navbar() {
         if (ev.key === 'Enter') {
             sendMess(ev);
         }
+    }
+
+    function showFavorite() {
+        setFavorites(true);
+    }
+    function hideFavorites() {
+        setFavorites(false);
     }
 
     return (
@@ -216,7 +188,7 @@ export default function Navbar() {
                         {user ? (
                             <div className="user-careAbout">
                                 <FontAwesomeIcon icon={faMessage} className="careAbout-icon" onClick={showMess} />
-                                <FontAwesomeIcon icon={faHeart} className="careAbout-icon" />
+                                <FontAwesomeIcon icon={faHeart} className="careAbout-icon" onClick={showFavorite} />
                                 <FontAwesomeIcon icon={faCartPlus}
                                     className="careAbout-icon"
                                     onClick={handleCart} />
@@ -250,6 +222,25 @@ export default function Navbar() {
                             </div>
                         </div>
                     }
+                    {favorites &&
+                        <div className="overlay">
+                            <div className="cart-container">
+                                <div className="cart-title">
+                                    <div className="cart-title">
+                                       <FontAwesomeIcon icon={faHeart} />
+                                        YOUR FAVORITE
+                                    </div>
+                                    <svg onClick={hideFavorites } xmlns="http://www.w3.org/2000/svg" cursor="pointer" height="1em" viewBox="0 0 448 512" fill="red">
+                                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 
+                                                0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/>
+                                    </svg>
+                                </div>
+                                <div className="cart-content">
+                                    <Favorite />
+                                </div>
+                            </div>
+                        </div>
+                    }
                     {mess &&
                         (
                             <div className="mess-container">
@@ -257,37 +248,7 @@ export default function Navbar() {
                                     <h3>Chat With Admin</h3>
                                     <FontAwesomeIcon icon={faX} onClick={hideMess} style={{ color: 'red', cursor: 'pointer' }} />
                                 </div>
-                                <div className="mess-content" ref={messagesListRef}>
-                                    {allMess.length > 0 && allMess.map(chat => (
-                                        <div key={chat} className=
-                                            {chat.sender === user._id ? "message-sent-by-me" : "message-received"}
-                                        >
-                                            {/* Hiển thị thời gian tin nhắn */}
-                                            <p className="message-time">
-                                                {new Date(chat.createdAt).toLocaleString()}
-                                            </p>
-                                            {/* Hiển thị nội dung tin nhắn */}
-                                            <p className="message-content">{chat.content}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="mess-input">
-                                    <form className="form-input-mess" onSubmit={sendMessages}>
-                                        <div className="input-img">
-                                            <FontAwesomeIcon style={{ height: '25px', color: 'white' }} icon={faAdd} />
-                                        </div>
-                                        <div className="input-text">
-
-                                            <input type="text" className="input-content" value={content}
-                                                onChange={(e) => setContent(e.target.value)} />
-
-                                        </div>
-                                        <div className="btn-send">
-                                            <FontAwesomeIcon style={{ height: '20px' }} icon={faFaceSmile} />
-                                        </div>
-                                        {/* <button>Send</button> */}
-                                    </form>
-                                </div>
+                                <ChatList/>
                             </div>
                         )}
                     {searching && (
@@ -297,14 +258,14 @@ export default function Navbar() {
                                     (searchKeyword === '' || product.name.toLowerCase().includes(searchKeyword.toLowerCase()))
                                 )
                                 .map(product => (
-                                    <div key={product} className="product-on-search">
+                                    <Link to={'/product/'+product._id} key={product} className="product-on-search">
                                         <div className="product-on-search-img">
                                             <img src={'http://localhost:4000/' + product.imagePaths[0]} alt="" />
                                         </div>
                                         <div>
                                             {product.name}
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                         </div>
                     )}

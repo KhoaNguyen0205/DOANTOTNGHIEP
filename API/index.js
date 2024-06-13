@@ -227,6 +227,18 @@ app.post('/add-to-favorite', async (req, res) => {
     }
 });
 
+app.get('/user-favorite', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        const { id } = userData;
+        if(!id){
+            return;
+        }else{
+            res.json(await Favorite.find({ user: id }))   
+        }
+    });
+});
+
 app.post('/api/add-voucher', async (req, res) => {
     const { title, valueVoucher, status, description } = req.body;
 
@@ -260,9 +272,9 @@ app.post('/api/order', async (req, res) => {
             paymentMethod, approve: false, adminCheck: false, success: false, canceled: false,
             confirmed: false,
         });
-        await newOrder.save();
+        const savedOrder = await newOrder.save();
 
-        sendConfirmationEmail(nameOfCus, userData.email, productId);
+        sendConfirmationEmail(nameOfCus, userData.email, productId, savedOrder._id);
 
         return res.status(201).json({ success: true });
     } catch (error) {
@@ -272,7 +284,7 @@ app.post('/api/order', async (req, res) => {
 })
 
 
-function sendConfirmationEmail(customerName, customerEmail, productId) {
+function sendConfirmationEmail(customerName, customerEmail, productId, newOrderID) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -286,7 +298,7 @@ function sendConfirmationEmail(customerName, customerEmail, productId) {
         subject: 'XÁC NHẬN ĐƠN HÀNG',
         html: `<p>Xin chào ${customerName},</p>
                <p>Cảm ơn bạn đã đặt hàng trên K-Sneaker. Hãy nhấp vào đường link sau để xác nhận đơn hàng:</p>
-               <a href="http://localhost:5173/confirm-order/${productId}">Xác nhận đơn hàng</a>
+               <a href="http://localhost:5173/confirm-order/${newOrderID}">Xác nhận đơn hàng</a>
                <h3>Lưu ý: Văn bản xác thực chỉ có hiệu lực trong 1h. Cảm ơn quý khách</h3>`
     };
     transporter.sendMail(mailOptions, (error, info) => {
@@ -321,18 +333,20 @@ eventEmitter.once('orderSuccess', async (orderData) => {
     }
 });
 
-app.get('/api/confirm-order/:productId', async (req, res) => {
-    const { productId } = req.params;
+app.get('/api/confirm-order/:newOrderID', async (req, res) => {
+    const { newOrderID } = req.params;
 
     try {
         const order = await Order.findOneAndUpdate(
-            { productId, confirmed: false },
+            { _id: newOrderID, confirmed: false },
             { $set: { confirmed: true } },
             { new: true }
         );
         if (!order) {
             return res.status(404).json({ error: 'Order not found or already confirmed.' });
         }
+
+        const productId = order.productId;
         eventEmitter.emit('orderSuccess', {
             productId: productId,
             quantity: order.quantity,
@@ -346,29 +360,108 @@ app.get('/api/confirm-order/:productId', async (req, res) => {
     }
 });
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => { // Chạy mỗi phút
     try {
-        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 giờ trước
-        await Order.deleteMany({ confirmed: false, createdAt: { $lt: oneHourAgo } });
-        console.log('Unconfirmed orders older than 1 hour deleted successfully.');
+        const oneMinuteAgo = new Date(Date.now() - 60 * 1000); // 1 phút trước
+        // const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 tiếng trước
+        const deletedOrders = await Order.find({ confirmed: false, createdAt: { $lt: oneMinuteAgo } }); // Sử dụng find thay vì deleteMany
+
+        for (const order of deletedOrders) {
+            console.log('Deleting unconfirmed order:', order._id);
+            const user = await User.findById(order.user);
+            if (user) {
+                console.log('User found:', user);
+                sendMailNoticeDeleteOrder(user.name, user.email)
+            } else {
+                console.log('User not found');
+            }
+            // Tiến hành xóa đơn hàng
+            await Order.deleteOne({ _id: order._id });
+        }
+
+        console.log('Unconfirmed orders older than 1 minute processed successfully.');
     } catch (error) {
-        console.error('Error deleting unconfirmed orders:', error);
+        console.error('Error processing unconfirmed orders:', error);
     }
 });
 
 
-app.put('/order/:id', (req, res) => {
-    const { id } = req.params;
-    const { approve, adminCheck, success, cancled } = req.body;
-    Order.findByIdAndUpdate(id, { approve, adminCheck, success, cancled }, { new: true })
-        .then(newOrder => {
-            res.json(newOrder)
-        })
-        .catch(error => {
+function sendMailNoticeDeleteOrder(customerName, customerEmail) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'ad.ksneaker2502@gmail.com',
+            pass: 'abacvfcpsiqialfy'
+        }
+    });
+    const mailOptions = {
+        from: 'admin K-Sneakers',
+        to: customerEmail,
+        subject: 'THÔNG BÁO HUỶ ĐƠN HÀNG',
+        html: `<p>Xin chào ${customerName},</p>
+               <p>Cảm ơn bạn đã lựa chọn K-Sneaker:</p>
+               <p>Hệ thống đã huỷ đơn hàng của bạn vì bạn chưa xác nhận đặt hàng trong vòng 1 tiếng.</p>`
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
             console.error(error);
-            res.status(500).send('sothing wrong on server')
-        })
-})
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+
+
+
+app.put('/order/:id', async (req, res) => {
+    const { id } = req.params;
+    const { approve, adminCheck, success, canceled } = req.body;
+    try {
+        const newOrder = await Order.findByIdAndUpdate(id, { approve, adminCheck, success, canceled }, { new: true });
+        if (!newOrder) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.json(newOrder);
+        
+        const productId = newOrder.productId;
+        eventEmitter.emit('orderDelete', {
+            productId: productId,
+            quantity: newOrder.quantity,
+            canceled: newOrder.canceled
+        });
+
+        // In thông tin của đơn hàng vừa thay đổi
+        console.log('Thông tin của đơn hàng vừa thay đổi:');
+        console.log(newOrder);
+        console.log(newOrder.quantity)
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong on the server');
+    }
+});
+
+eventEmitter.on('orderDelete', async (orderData) => {
+    try {
+        const product = await Product.findById(orderData.productId);
+        if (!product) {
+            return console.log('Product not found.');
+        }
+        
+        if (orderData.canceled) {
+            product.quantity += orderData.quantity;
+            await product.save();
+            console.log('Product quantity after cancellation:', product.quantity);
+        } else {
+            console.log('Order not canceled. No quantity change.');
+            console.log(product);
+        }
+    } catch (error) {
+        console.log('Error processing order cancellation event:', error);
+    }
+});
 
 app.put('/api/inventory/product/:id', (req, res) => {
     const { id } = req.params;
@@ -388,7 +481,7 @@ app.put('/api/inventory/product/:id', (req, res) => {
 //#1 notification if have a new order
 app.get('/api/notification/new-order', async (req, res) => {
     try {
-        const newOrders = await Order.find({ confirmed: true, approve: false });
+        const newOrders = await Order.find({ confirmed: true, approve: false, canceled: false });
         res.json(newOrders);
     } catch (error) {
         console.error('Lỗi khi lấy danh sách đơn hàng mới:', error);
@@ -477,6 +570,11 @@ app.get('/api/cart/:id', async (req, res) => {
     res.json(await Cart.findById(id));
 })
 
+app.delete('/api/delete/cart/:id', async (req, res) => {
+    const id = req.params.id;
+    await Cart.findByIdAndRemove(id).exec();
+    res.send('deleted');
+})
 
 const storage = multer.diskStorage({
     destination: function (req, res, cb) {
@@ -570,13 +668,7 @@ app.get('/api/product/:id', async (req, res) => {
     res.json(await Product.findById(id))
 })
 
-app.get('/user-favorite', (req, res) => {
-    const { token } = req.cookies;
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-        const { id } = userData;
-        res.json(await Favorite.find({ user: id }))
-    });
-});
+
 
 app.get('/user-cart', (req, res) => {
     const { token } = req.cookies;
@@ -628,8 +720,9 @@ app.post('/api/chats', async (req, res) => {
     }
 });
 
-app.get('/user-send-chats', (req, res) => {
+app.get('/user-send-chats', async (req, res) => {
     const { token } = req.cookies;
+    const userData = getUserDataFromReq(req);
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         const { id } = userData;
         res.json(await Chat.find({ sender: id }))
@@ -676,10 +769,10 @@ app.post('/api/admin/chats/:id', async (req, res) => {
 app.get('/api/list/customer-on-chat', async (req, res) => {
     try {
         const chats = await Chat.find({}, 'sender receiver');
-        
+
         // Tạo một Set để lưu trữ các ID sender và receiver duy nhất
         const uniqueIds = new Set();
-        
+
         // Lặp qua mỗi bản ghi và thêm các ID vào Set
         chats.forEach(chat => {
             uniqueIds.add(chat.sender);
@@ -691,7 +784,7 @@ app.get('/api/list/customer-on-chat', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 })
-app.get('/api/chats', async(req,res) => {
+app.get('/api/chats', async (req, res) => {
     res.json(await Chat.find());
 })
 
@@ -707,14 +800,14 @@ const storage2 = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     },
 });
-const upload2 = multer({ storage : storage2 });
-app.post('/api/comment/:id', upload2.array('images', 3), async(req,res) => {
-    const {content,rate} = req.body;
+const upload2 = multer({ storage: storage2 });
+app.post('/api/comment/:id', upload2.array('images', 3), async (req, res) => {
+    const { content, rate } = req.body;
     const image = [];
-    const {id} = req.params;
+    const { id } = req.params;
     const userData = await getUserDataFromReq(req);
 
-    
+
     if (req.files) {
         req.files.forEach((file) => {
             image.push(file.path);
@@ -723,21 +816,21 @@ app.post('/api/comment/:id', upload2.array('images', 3), async(req,res) => {
 
     const newComment = new Comment({
         user: userData.id,
-        productId : id,
+        productId: id,
         content,
         rate,
         image: image
     });
     try {
         await newComment.save();
-        res.json({success: true, image: image})
+        res.json({ success: true, image: image })
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Something went wrong on the server' });
     }
 })
 
-app.get('/api/user-cmt', (req,res) => {
+app.get('/api/user-cmt', (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         const { id } = userData;
@@ -745,7 +838,7 @@ app.get('/api/user-cmt', (req,res) => {
     });
 })
 
-app.get('/api/cmt', async(req,res) => {
+app.get('/api/cmt', async (req, res) => {
     res.json(await Comment.find());
 })
 
